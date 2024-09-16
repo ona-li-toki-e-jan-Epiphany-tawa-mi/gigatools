@@ -18,7 +18,11 @@
 -- Gigatools hammers module.
 -- Like pickaxes, but mine in a 3x3.
 
--- TODO: add localization.
+-- TODO add localization.
+-- TODO make sure this consumes accurate durability.
+-- TODO set up registering system for hammers.
+-- TODO add hammers for all metal and gem materials.
+-- TODO add crafting recipes.
 
 -- Imports private namespace.
 local _gigatools = ...
@@ -45,14 +49,13 @@ minetest.register_tool("gigatools:hammer_steel", {
 
 
 
-
---- Breaks a 3x3 plane alonged the specified axes.
+--- Breaks a 3x3 plane of nodes along the specified axes.
 -- @param position The position of the center of the plane. The node at this
 -- location will not be broken.
 -- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
 -- @param axis1_field The name of the field that represents the second axis (i.e. "z".)
 -- @param digger The ObjectRef thats breaking the blocks. May be nil.
-local function break_3x3_plane(position, axis1_field, axis2_field, digger)
+local function break_3x3_plane(position, axis1_field, axis2_field, digger, node_group)
    local offset_position = table.copy(position)
 
    for axis1_offset=-1,1 do
@@ -60,7 +63,11 @@ local function break_3x3_plane(position, axis1_field, axis2_field, digger)
          if 0 ~= axis1_offset or 0 ~= axis2_offset then
             offset_position[axis1_field] = position[axis1_field] + axis1_offset
             offset_position[axis2_field] = position[axis2_field] + axis2_offset
-            minetest.dig_node(offset_position, digger)
+
+            local node = minetest.get_node(offset_position)
+            if "ignore" ~= node.name and 0 ~= minetest.get_item_group(node.name, node_group) then
+               minetest.dig_node(offset_position, digger)
+            end
          end
       end
    end
@@ -68,7 +75,6 @@ end
 
 local half_pi    = math.pi / 2
 local quarter_pi = math.pi / 4
-
 -- How many radians the player's pitch can be from +/- pi/2 (looking straight up
 -- or down) to count as mining vertically.
 local vertical_mining_epsilon_rad = 0.2
@@ -84,7 +90,9 @@ local function try_hammer(position, old_node, digger)
    local player_name = digger:get_player_name()
    if is_hammering[player_name] then return end
 
-   -- TODO set up registering system for hammers.
+   -- Hammers should only work on cracky blocks.
+   if 0 == minetest.get_item_group(old_node.name, "cracky") then return end
+
    if "gigatools:hammer_steel" ~= digger:get_wielded_item():get_name() then return end
 
    is_hammering[player_name] = true
@@ -96,15 +104,15 @@ local function try_hammer(position, old_node, digger)
 
    if math.abs(pitch_rad) > half_pi - vertical_mining_epsilon_rad then
       -- If facing up/down "enough," break across the XZ plane.
-      break_3x3_plane(position, "x", "z", digger)
+      break_3x3_plane(position, "x", "z", digger, "cracky")
    elseif (yaw_rad > quarter_pi and yaw_rad < math.pi - quarter_pi)
        or (yaw_rad > 3*half_pi - quarter_pi and yaw_rad < 2*math.pi - quarter_pi)
    then
       -- If facing the +/- X axis "enough," break across the ZY plane.
-      break_3x3_plane(position, "z", "y", digger)
+      break_3x3_plane(position, "z", "y", digger, "cracky")
    else
       -- If facing the +/- Z axis "enough," break across the XY plane.
-      break_3x3_plane(position, "x", "y", digger)
+      break_3x3_plane(position, "x", "y", digger, "cracky")
    end
 
    is_hammering[player_name] = nil

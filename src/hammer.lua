@@ -23,13 +23,14 @@
 -- TODO set up registering system for hammers.
 -- TODO add hammers for all metal and gem materials.
 -- TODO add crafting recipes.
+-- TODO make group checking use groupcaps present in item.
+-- TODO make mining time depend on the blocks to mine for hammer.
 
 -- Imports private namespace.
 local _gigatools = ...
 
 
 
--- TODO figure out mining speed
 minetest.register_tool("gigatools:hammer_steel", {
   description     = "Steel Hammer",
   inventory_image = "default_tool_steelpick.png",        -- TODO change
@@ -37,12 +38,12 @@ minetest.register_tool("gigatools:hammer_steel", {
   groups          = { pickaxe = 1 },
 
   tool_capabilities = {
-     full_punch_interval = 1.0 * 2.5,
+     full_punch_interval = 2.5,
      max_drop_level      = 1,
      damage_groups       = { fleshy = 4 }, -- TODO change
 
      groupcaps = {
-        cracky = { times = { [1] = 4.00 * 2.5, [2] = 1.60 * 2.5, [3] = 0.80 * 2.5 }, uses = 20, maxlevel = 2 }
+        cracky = { times = { [1] = 10.0, [2] = 4.0, [3] = 2.0 }, uses = 20, maxlevel = 2 } -- TODO increase durability.
      }
   }
 })

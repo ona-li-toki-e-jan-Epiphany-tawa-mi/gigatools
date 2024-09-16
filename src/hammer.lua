@@ -46,6 +46,26 @@ minetest.register_tool("gigatools:hammer_steel", {
 
 
 
+--- Breaks a 3x3 plane alonged the specified axes.
+-- @param position The position of the center of the plane. The node at this
+-- location will not be broken.
+-- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
+-- @param axis1_field The name of the field that represents the second axis (i.e. "z".)
+-- @param digger The ObjectRef thats breaking the blocks. May be nil.
+local function break_3x3_plane(position, axis1_field, axis2_field, digger)
+   local offset_position = table.copy(position)
+
+   for axis1_offset=-1,1 do
+      for axis2_offset=-1,1 do
+         if 0 ~= axis1_offset or 0 ~= axis2_offset then
+            offset_position[axis1_field] = position[axis1_field] + axis1_offset
+            offset_position[axis2_field] = position[axis2_field] + axis2_offset
+            minetest.dig_node(offset_position, digger)
+         end
+      end
+   end
+end
+
 local half_pi    = math.pi / 2
 local quarter_pi = math.pi / 4
 
@@ -53,10 +73,21 @@ local quarter_pi = math.pi / 4
 -- or down) to count as mining vertically.
 local vertical_mining_epsilon_rad = 0.2
 
+-- Used to check if a player has hammered a block and that the resulting calls
+-- from register_on_nodedig() are the result of the hammer's 3x3 mining. This is
+-- to prevent recursively mining blocks.
+local is_hammering = {}
+
+--- Handles checking for the use of a hammer and digging the extra blocks.
 local function try_hammer(position, old_node, digger)
    if nil == digger or not digger:is_player() then return end
+   local player_name = digger:get_player_name()
+   if is_hammering[player_name] then return end
+
    -- TODO set up registering system for hammers.
    if "gigatools:hammer_steel" ~= digger:get_wielded_item():get_name() then return end
+
+   is_hammering[player_name] = true
 
    -- Since we don't know which face of the block the player broke, we will have
    -- to guess based on their rotation.
@@ -65,15 +96,17 @@ local function try_hammer(position, old_node, digger)
 
    if math.abs(pitch_rad) > half_pi - vertical_mining_epsilon_rad then
       -- If facing up/down "enough," break across the XZ plane.
-      print("Breaking XZ plane!") -- TODO.
+      break_3x3_plane(position, "x", "z", digger)
    elseif (yaw_rad > quarter_pi and yaw_rad < math.pi - quarter_pi)
        or (yaw_rad > 3*half_pi - quarter_pi and yaw_rad < 2*math.pi - quarter_pi)
    then
       -- If facing the +/- X axis "enough," break across the ZY plane.
-      print("Breaking ZY plane!") -- TODO.
+      break_3x3_plane(position, "z", "y", digger)
    else
       -- If facing the +/- Z axis "enough," break across the XY plane.
-      print("Breaking XY plane!") -- TODO.
+      break_3x3_plane(position, "x", "y", digger)
    end
+
+   is_hammering[player_name] = nil
 end
 minetest.register_on_dignode(try_hammer)

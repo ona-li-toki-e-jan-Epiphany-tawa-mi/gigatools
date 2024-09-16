@@ -24,7 +24,8 @@
 -- TODO add hammers for all metal and gem materials.
 -- TODO add crafting recipes.
 -- TODO make group checking use groupcaps present in item.
--- TODO make mining time depend on the nodes to mine for hammer.
+-- TODO add division (like 1/3) to the total adjusted mining time of the hammers to make them a little faster.
+-- TODO factor out common code.
 
 -- Imports private namespace.
 local _gigatools = ...
@@ -65,6 +66,7 @@ local function is_meant_to_break(toolitem, node)
    return false
 end
 
+-- TODO make use digger:get_wielded_item().
 --- Breaks a 3x3 plane of nodes along the specified axes.
 -- @param position The position of the center of the plane. The node at this
 -- location will not be broken.
@@ -135,3 +137,86 @@ local function try_hammer(position, old_node, digger)
    is_hammering[player_name] = nil
 end
 minetest.register_on_dignode(try_hammer)
+
+
+
+
+-- TODO make use digger:get_wielded_item().
+--- Gets the time to dig a 3x3 plane of nodes along the specified axes.
+-- @param position The position of the center of the plane.
+-- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
+-- @param axis1_field The name of the field that represents the second axis (i.e. "z".)
+-- @param digger The ObjectRef thats punching the node. May be nil.
+-- @param toolitem The ItemStack to use to punch the node.
+local function get_3x3_plane_dig_time(position, axis1_field, axis2_field, puncher, toolitem)
+   local dig_time = 0.0
+
+   local offset_position = table.copy(position)
+
+   for axis1_offset=-1,1 do
+      for axis2_offset=-1,1 do
+         offset_position[axis1_field] = position[axis1_field] + axis1_offset
+         offset_position[axis2_field] = position[axis2_field] + axis2_offset
+
+         local node = minetest.get_node(offset_position)
+         if "ignore" ~= node.name and is_meant_to_break(toolitem, node) then
+            local node_definition = minetest.registered_nodes[node.name]
+            dig_time = dig_time + minetest.get_dig_params(
+               node_definition.groups,
+               toolitem:get_tool_capabilities()
+            ).time
+         end
+      end
+   end
+
+   return dig_time
+end
+
+--- Adjusts the dig speed of the hammer to account for how many blocks are to be
+--- broken. Yup, you can't cheat and break cobblestone by obsidian.
+local function try_adjust_hammer_dig_time(position, node, puncher, pointed_thing)
+   if nil == puncher or not puncher:is_player() then return end
+   local wielded_item = puncher:get_wielded_item()
+
+   if "gigatools:hammer_steel" ~= wielded_item:get_name() then return end
+   -- Only run 3x3 breaking if the tool is meant to break that node.
+   if not is_meant_to_break(wielded_item, node) then return end
+
+   -- Wipe previous dig time adjustments.
+   wielded_item:get_meta():set_tool_capabilities(nil)
+
+   -- Since we don't know which face of the node the player punched, we will
+   -- have to guess based on their rotation.
+   local yaw_rad   = puncher:get_look_horizontal()
+   local pitch_rad = puncher:get_look_vertical()
+
+   local dig_time = nil
+   if math.abs(pitch_rad) > half_pi - vertical_mining_epsilon_rad then
+      -- If facing up/down "enough," get dig time of the XZ plane.
+      dig_time = get_3x3_plane_dig_time(position, "x", "z", puncher, wielded_item)
+   elseif (yaw_rad > quarter_pi and yaw_rad < math.pi - quarter_pi)
+       or (yaw_rad > 3*half_pi - quarter_pi and yaw_rad < 2*math.pi - quarter_pi)
+   then
+      -- If facing the +/- X axis "enough," get dig time of the ZY plane.
+      dig_time = get_3x3_plane_dig_time(position, "z", "y", puncher, wielded_item)
+   else
+      -- If facing the +/- Z axis "enough," get dig time of the XY plane.
+      dig_time = get_3x3_plane_dig_time(position, "x", "y", puncher, wielded_item)
+   end
+
+   -- 0.0 if there were no mineable blocks,
+   if 0.0 ~= dig_time then
+      -- Rewrite dig times to account for all blocks to be mined.
+      local tool_capabilities = wielded_item:get_tool_capabilities()
+      for _, groupcap in pairs(tool_capabilities.groupcaps) do
+         for i, time in pairs(groupcap.times) do
+            groupcap.times[i] = time * dig_time
+         end
+      end
+      wielded_item:get_meta():set_tool_capabilities(tool_capabilities)
+   end
+
+   -- Write out new dig times.
+   puncher:set_wielded_item(wielded_item)
+end
+minetest.register_on_punchnode(try_adjust_hammer_dig_time)

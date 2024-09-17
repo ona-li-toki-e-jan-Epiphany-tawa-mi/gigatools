@@ -56,8 +56,7 @@ minetest.register_tool("gigatools:hammer_steel", {
 --   node The node.
 --   axis1_offset The offset of the node from the center along the first axis.
 --   axis2_offset The offset of the node from the center along the second axis.
--- @param position The position of the center of the plane. The node at this
--- location will not be broken.
+-- @param position The position of the center of the plane.
 -- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
 -- @param axis1_field The name of the field that represents the second axis (i.e. "z".)
 local function apply_3x3_plane(func, position, axis1_field, axis2_field)
@@ -77,7 +76,7 @@ local function apply_3x3_plane(func, position, axis1_field, axis2_field)
 end
 
 --- Returns whether a node is meant to be broken by a tool (as-in the node is a
---- part of at least one of the tool's groupcaps.
+--- part of at least one of the tool's groupcaps.)
 -- @param toolitem ItemStack.
 local function is_meant_to_break(toolitem, node)
    local groupcaps = toolitem:get_tool_capabilities().groupcaps
@@ -97,10 +96,12 @@ local quarter_pi = math.pi / 4
 -- or down) to count as facing vertically.
 local vertical_mining_epsilon_rad = 0.2
 
+-- Returns whether the player is facing the y-axis (looking up or down "enough".)
 local function is_player_facing_y_axis(player)
    return math.abs(player:get_look_vertical()) > half_pi - vertical_mining_epsilon_rad
 end
 
+-- Returns whether the player is facing the x-axis (looking at +/- X "enough".)
 local function is_player_facing_x_axis(player)
    local yaw_rad = player:get_look_horizontal()
    return (yaw_rad > quarter_pi and yaw_rad < math.pi - quarter_pi)

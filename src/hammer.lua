@@ -110,7 +110,6 @@ end
 
 
 
--- TODO make use digger:get_wielded_item().
 --- Breaks a 3x3 plane of nodes along the specified axes.
 -- @param position The position of the center of the plane. The node at this
 -- location will not be broken.
@@ -156,8 +155,6 @@ minetest.register_on_dignode(try_hammer)
 
 
 
-
--- TODO make use digger:get_wielded_item().
 --- Gets the time to dig a 3x3 plane of nodes along the specified axes.
 -- @param position The position of the center of the plane.
 -- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
@@ -186,8 +183,8 @@ end
 --- broken. Yup, you can't cheat and break cobblestone by obsidian.
 local function try_adjust_hammer_dig_time(position, node, puncher, pointed_thing)
    if nil == puncher or not puncher:is_player() then return end
-   local wielded_item = puncher:get_wielded_item()
 
+   local wielded_item = puncher:get_wielded_item()
    if "gigatools:hammer_steel" ~= wielded_item:get_name() then return end
    -- Only run 3x3 breaking if the tool is meant to break that node.
    if not is_meant_to_break(wielded_item, node) then return end
@@ -195,7 +192,7 @@ local function try_adjust_hammer_dig_time(position, node, puncher, pointed_thing
    -- Wipe previous dig time adjustments.
    wielded_item:get_meta():set_tool_capabilities(nil)
 
-   local dig_time = nil
+   local dig_time
    if is_player_facing_y_axis(puncher) then
       dig_time = get_3x3_plane_dig_time(position, "x", "z", puncher, wielded_item)
    elseif is_player_facing_x_axis(puncher) then

@@ -15,6 +15,9 @@
 -- You should have received a copy of the GNU Lesser General Public License
 -- along with gigatools. If not, see <https://www.gnu.org/licenses/>.
 
+-- Gigatools core mod.
+-- Handles inner workings of multi-node digging tools.
+
 
 
 -- Private namespace for internal functions.
@@ -41,13 +44,9 @@ function _gigatools.is_mod_enabled(name)
    return nil ~= minetest.get_modpath(name)
 end
 
--- TODO
-_gigatools.registered_3x3_tools = {}
 
--- TODO
-function _gigatools.register_3x3_tool(name)
-   _gigatools.registered_3x3_tools[name] = true
-end
+
+_gigatools.load_module("api.lua")
 
 
 
@@ -139,7 +138,7 @@ local function try_dig_with_3x3_tool(position, old_node, digger)
    if is_using_3x3_tool[player_name] then return end
 
    local wielded_item = digger:get_wielded_item()
-   if not _gigatools.registered_3x3_tools[wielded_item:get_name()] then return end
+   if not gigatools.registered_3x3_tools[wielded_item:get_name()] then return end
    -- Only run 3x3 breaking if the tool is meant to break that node.
    if not is_meant_to_break(wielded_item, old_node) then return end
 
@@ -196,7 +195,7 @@ local function try_adjust_3x3_tool_dig_time(position, node, puncher, pointed_thi
    if nil == puncher or not puncher:is_player() then return end
 
    local wielded_item = puncher:get_wielded_item()
-   if not _gigatools.registered_3x3_tools[wielded_item:get_name()] then return end
+   if not gigatools.registered_3x3_tools[wielded_item:get_name()] then return end
    -- Only run 3x3 breaking if the tool is meant to break that node.
    if not is_meant_to_break(wielded_item, node) then return end
 
@@ -228,8 +227,3 @@ local function try_adjust_3x3_tool_dig_time(position, node, puncher, pointed_thi
    puncher:set_wielded_item(wielded_item)
 end
 minetest.register_on_punchnode(try_adjust_3x3_tool_dig_time)
-
-
-
-
-_gigatools.load_module("src/hammer.lua")

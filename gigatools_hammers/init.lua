@@ -15,21 +15,19 @@
 -- You should have received a copy of the GNU Lesser General Public License
 -- along with gigatools. If not, see <https://www.gnu.org/licenses/>.
 
--- Gigatools hammers module.
+-- Gigatools hammers submod.
 -- Like pickaxes, but mine in a 3x3.
+
+-- NOTE for adding new hammers: multiply base item punch/dig speeds by 1.7, uses
+-- by 9, and add 1 to damage groups.
 
 -- TODO add localization.
 -- TODO consider making hammers do extra knockback.
 
--- Imports private namespace.
-local _gigatools = ...
 
 
-
--- Note for adding new hammers: multiply base item mining speeds by 1.7 and uses by 9.
-
-_gigatools.register_3x3_tool("gigatools:hammer_bronze")
-minetest.register_tool("gigatools:hammer_bronze", {
+gigatools.register_3x3_tool("gigatools_hammers:hammer_bronze")
+minetest.register_tool("gigatools_hammers:hammer_bronze", {
     description     = "Bronze Hammer",
     inventory_image = "default_tool_bronzepick.png", -- TODO change
     sound           = { breaks  = "default_tool_breaks" },
@@ -46,8 +44,8 @@ minetest.register_tool("gigatools:hammer_bronze", {
     }
 })
 
-_gigatools.register_3x3_tool("gigatools:hammer_steel")
-minetest.register_tool("gigatools:hammer_steel", {
+gigatools.register_3x3_tool("gigatools_hammers:hammer_steel")
+minetest.register_tool("gigatools_hammers:hammer_steel", {
   description     = "Steel Hammer",
   inventory_image = "default_tool_steelpick.png", -- TODO change
   sound           = { breaks  = "default_tool_breaks" },
@@ -64,8 +62,8 @@ minetest.register_tool("gigatools:hammer_steel", {
   }
 })
 
-_gigatools.register_3x3_tool("gigatools:hammer_mese")
-minetest.register_tool("gigatools:hammer_mese", {
+gigatools.register_3x3_tool("gigatools_hammers:hammer_mese")
+minetest.register_tool("gigatools_hammers:hammer_mese", {
     description     = "Mese Hammer",
     inventory_image = "default_tool_mesepick.png", -- TODO change
     sound           = { breaks  = "default_tool_breaks" },
@@ -82,8 +80,8 @@ minetest.register_tool("gigatools:hammer_mese", {
     }
 })
 
-_gigatools.register_3x3_tool("gigatools:hammer_diamond")
-minetest.register_tool("gigatools:hammer_diamond", {
+gigatools.register_3x3_tool("gigatools_hammers:hammer_diamond")
+minetest.register_tool("gigatools_hammers:hammer_diamond", {
     description     = "Diamond Hammer",
     inventory_image = "default_tool_diamondpick.png", -- TODO change
     sound           = { breaks  = "default_tool_breaks" },
@@ -109,7 +107,7 @@ local craft_ingredients = {
 }
 for name, material in pairs(craft_ingredients) do
     minetest.register_craft({
-        output = "gigatools:hammer_" .. name,
+        output = "gigatools_hammers:hammer_" .. name,
         recipe = {
             { material, material,      material },
             { "",       "group:stick", ""       },

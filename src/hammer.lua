@@ -19,18 +19,16 @@
 -- Like pickaxes, but mine in a 3x3.
 
 -- TODO add localization.
--- TODO make sure this consumes accurate durability.
 -- TODO set up registering system for hammers.
 -- TODO add hammers for all metal and gem materials.
 -- TODO add crafting recipes.
--- TODO add division (like 1/3) to the total adjusted mining time of the hammers to make them a little faster.
 
 -- Imports private namespace.
 local _gigatools = ...
 
 
 
--- Note for adding new hammers: multiply base item mining speeds by 1.7.
+-- Note for adding new hammers: multiply base item mining speeds by 1.7 and uses by 9.
 minetest.register_tool("gigatools:hammer_steel", {
   description     = "Steel Hammer",
   inventory_image = "default_tool_steelpick.png",        -- TODO change
@@ -43,7 +41,7 @@ minetest.register_tool("gigatools:hammer_steel", {
      damage_groups       = { fleshy = 4 }, -- TODO change
 
      groupcaps = {
-        cracky = { times = { [1] = 6.8, [2] = 2.72, [3] = 1.36 }, uses = 20, maxlevel = 2 } -- TODO increase durability.
+        cracky = { times = { [1] = 6.8, [2] = 2.72, [3] = 1.36 }, uses = 180, maxlevel = 2 }
      }
   }
 })

@@ -121,7 +121,7 @@ end
 local function break_3x3_plane(position, axis1_field, axis2_field, digger, toolitem)
    apply_3x3_plane(function(position, node, axis1_offset, axis2_offset)
          if (0 ~= axis1_offset or 0 ~= axis2_offset) and is_meant_to_break(toolitem, node) then
-            minetest.dig_node(position, digger)
+            minetest.node_dig(position, node, digger)
          end
    end, position, axis1_field, axis2_field)
 end

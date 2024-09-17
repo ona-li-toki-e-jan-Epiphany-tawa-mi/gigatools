@@ -155,7 +155,10 @@ minetest.register_on_dignode(try_hammer)
 
 
 
---- Gets the time to dig a 3x3 plane of nodes along the specified axes.
+--- Gets the time to dig a 3x3 plane of nodes along the specified axes for a 3x3
+--- digging tool.
+-- The time returned is non-linear; mining more blocks at once will yield a
+-- faster dig time per block.
 -- @param position The position of the center of the plane.
 -- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
 -- @param axis1_field The name of the field that represents the second axis (i.e. "z".)
@@ -164,19 +167,25 @@ minetest.register_on_dignode(try_hammer)
 -- @return The dig time, or 0.0, if none of the blocks are meant to be broken by
 -- the tool.
 local function get_3x3_plane_dig_time(position, axis1_field, axis2_field, puncher, toolitem)
-   local dig_time = 0.0
+   local actual_dig_time = 0.0
+   local block_count     = 0
 
    apply_3x3_plane(function(position, node, axis1_offset, axis2_offset)
          if is_meant_to_break(toolitem, node) then
             local node_definition = minetest.registered_nodes[node.name]
-            dig_time = dig_time + minetest.get_dig_params(
+            actual_dig_time = actual_dig_time + minetest.get_dig_params(
                node_definition.groups,
                toolitem:get_tool_capabilities()
             ).time
+            block_count = 1 + block_count
          end
    end, position, axis1_field, axis2_field)
 
-   return dig_time
+   if block_count > 0 then
+      return actual_dig_time / (1 + math.log(block_count))
+   else
+      return 0.0
+   end
 end
 
 --- Adjusts the dig speed of the hammer to account for how many blocks are to be

@@ -36,9 +36,9 @@ minetest.register_tool("gigatools:hammer_steel", {
   groups          = { pickaxe = 1 },
 
   tool_capabilities = {
-     full_punch_interval = 2.5,
+     full_punch_interval = 1.7,
      max_drop_level      = 1,
-     damage_groups       = { fleshy = 4 }, -- TODO change
+     damage_groups       = { fleshy = 5 },
 
      groupcaps = {
         cracky = { times = { [1] = 6.8, [2] = 2.72, [3] = 1.36 }, uses = 180, maxlevel = 2 }

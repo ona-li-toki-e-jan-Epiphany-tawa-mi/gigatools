@@ -19,9 +19,8 @@
 -- Like pickaxes, but mine in a 3x3.
 
 -- TODO add localization.
--- TODO set up registering system for hammers.
--- TODO add hammers for all metal and gem materials.
 -- TODO add crafting recipes.
+-- TODO consider making hammers do extra knockback.
 
 -- Imports private namespace.
 local _gigatools = ...
@@ -29,9 +28,32 @@ local _gigatools = ...
 
 
 -- Note for adding new hammers: multiply base item mining speeds by 1.7 and uses by 9.
+
+-- A list of hammer item names.
+local hammers = {}
+
+hammers["gigatools:hammer_bronze"] = true
+minetest.register_tool("gigatools:hammer_bronze", {
+    description     = "Bronze Hammer",
+    inventory_image = "default_tool_bronzepick.png", -- TODO change
+    sound           = { breaks  = "default_tool_breaks" },
+    groups          = { pickaxe = 1 },
+
+    tool_capabilities = {
+        full_punch_interval = 1.7,
+        max_drop_level      = 1,
+        damage_groups       = { fleshy = 5 },
+
+        groupcaps = {
+           cracky = { times = { [1] = 7.65, [2] = 3.06, [3] = 1.53 }, uses = 180, maxlevel = 2 },
+        }
+    }
+})
+
+hammers["gigatools:hammer_steel"] = true
 minetest.register_tool("gigatools:hammer_steel", {
   description     = "Steel Hammer",
-  inventory_image = "default_tool_steelpick.png",        -- TODO change
+  inventory_image = "default_tool_steelpick.png", -- TODO change
   sound           = { breaks  = "default_tool_breaks" },
   groups          = { pickaxe = 1 },
 
@@ -44,6 +66,42 @@ minetest.register_tool("gigatools:hammer_steel", {
         cracky = { times = { [1] = 6.8, [2] = 2.72, [3] = 1.36 }, uses = 180, maxlevel = 2 }
      }
   }
+})
+
+hammers["gigatools:hammer_mese"] = true
+minetest.register_tool("gigatools:hammer_mese", {
+    description     = "Mese Hammer",
+    inventory_image = "default_tool_mesepick.png", -- TODO change
+    sound           = { breaks  = "default_tool_breaks" },
+    groups          = { pickaxe = 1 },
+
+    tool_capabilities = {
+        full_punch_interval = 1.53,
+        max_drop_level      = 3,
+        damage_groups       = { fleshy = 6 },
+
+        groupcaps={
+            cracky = { times = { [1] = 4.08, [2] = 2.04, [3] = 1.02 }, uses = 180, maxlevel = 3 },
+        }
+    }
+})
+
+hammers["gigatools:hammer_diamond"] = true
+minetest.register_tool("gigatools:hammer_diamond", {
+    description     = "Diamond Hammer",
+    inventory_image = "default_tool_diamondpick.png", -- TODO change
+    sound           = { breaks  = "default_tool_breaks" },
+    groups          = { pickaxe = 1 },
+
+    tool_capabilities = {
+        full_punch_interval = 1.53,
+        max_drop_level      = 3,
+        damage_groups       = { fleshy = 6 },
+
+        groupcaps = {
+            cracky = { times = { [1] = 3.4, [2] = 1.7, [3] = 0.85 }, uses = 270, maxlevel = 3 },
+        }
+    }
 })
 
 
@@ -136,7 +194,7 @@ local function try_hammer(position, old_node, digger)
    if is_hammering[player_name] then return end
 
    local wielded_item = digger:get_wielded_item()
-   if "gigatools:hammer_steel" ~= wielded_item:get_name() then return end
+   if not hammers[wielded_item:get_name()] then return end
    -- Only run 3x3 breaking if the tool is meant to break that node.
    if not is_meant_to_break(wielded_item, old_node) then return end
 
@@ -193,7 +251,7 @@ local function try_adjust_hammer_dig_time(position, node, puncher, pointed_thing
    if nil == puncher or not puncher:is_player() then return end
 
    local wielded_item = puncher:get_wielded_item()
-   if "gigatools:hammer_steel" ~= wielded_item:get_name() then return end
+   if not hammers[wielded_item:get_name()] then return end
    -- Only run 3x3 breaking if the tool is meant to break that node.
    if not is_meant_to_break(wielded_item, node) then return end
 

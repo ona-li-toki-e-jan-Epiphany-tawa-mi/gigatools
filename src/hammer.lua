@@ -51,6 +51,33 @@ minetest.register_tool("gigatools:hammer_steel", {
 
 
 
+--- Calls a function on 3x3 plane of nodes along the specified axes.
+-- @param func The function to call on each block in the plane.
+-- Parameters:
+--   position The position of the node.
+--   node The node.
+--   axis1_offset The offset of the node from the center along the first axis.
+--   axis2_offset The offset of the node from the center along the second axis.
+-- @param position The position of the center of the plane. The node at this
+-- location will not be broken.
+-- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
+-- @param axis1_field The name of the field that represents the second axis (i.e. "z".)
+local function apply_3x3_plane(func, position, axis1_field, axis2_field)
+   local offset_position = table.copy(position)
+
+   for axis1_offset=-1,1 do
+      for axis2_offset=-1,1 do
+         offset_position[axis1_field] = position[axis1_field] + axis1_offset
+         offset_position[axis2_field] = position[axis2_field] + axis2_offset
+
+         local node = minetest.get_node(offset_position)
+         if "ignore" ~= node.name then
+            func(offset_position, node, axis1_offset, axis2_offset)
+         end
+      end
+   end
+end
+
 --- Returns whether a node is meant to be broken by a tool (as-in the node is a
 --- part of at least one of the tool's groupcaps.
 -- @param toolitem ItemStack.
@@ -66,6 +93,8 @@ local function is_meant_to_break(toolitem, node)
    return false
 end
 
+
+
 -- TODO make use digger:get_wielded_item().
 --- Breaks a 3x3 plane of nodes along the specified axes.
 -- @param position The position of the center of the plane. The node at this
@@ -75,21 +104,11 @@ end
 -- @param digger The ObjectRef thats breaking the node. May be nil.
 -- @param toolitem The ItemStack to use to break the node.
 local function break_3x3_plane(position, axis1_field, axis2_field, digger, toolitem)
-   local offset_position = table.copy(position)
-
-   for axis1_offset=-1,1 do
-      for axis2_offset=-1,1 do
-         if 0 ~= axis1_offset or 0 ~= axis2_offset then
-            offset_position[axis1_field] = position[axis1_field] + axis1_offset
-            offset_position[axis2_field] = position[axis2_field] + axis2_offset
-
-            local node = minetest.get_node(offset_position)
-            if "ignore" ~= node.name and is_meant_to_break(toolitem, node) then
-               minetest.dig_node(offset_position, digger)
-            end
+   apply_3x3_plane(function(position, node, axis1_offset, axis2_offset)
+         if (0 ~= axis1_offset or 0 ~= axis2_offset) and is_meant_to_break(toolitem, node) then
+            minetest.dig_node(position, digger)
          end
-      end
-   end
+   end, position, axis1_field, axis2_field)
 end
 
 local half_pi    = math.pi / 2
@@ -151,23 +170,15 @@ minetest.register_on_dignode(try_hammer)
 local function get_3x3_plane_dig_time(position, axis1_field, axis2_field, puncher, toolitem)
    local dig_time = 0.0
 
-   local offset_position = table.copy(position)
-
-   for axis1_offset=-1,1 do
-      for axis2_offset=-1,1 do
-         offset_position[axis1_field] = position[axis1_field] + axis1_offset
-         offset_position[axis2_field] = position[axis2_field] + axis2_offset
-
-         local node = minetest.get_node(offset_position)
-         if "ignore" ~= node.name and is_meant_to_break(toolitem, node) then
+   apply_3x3_plane(function(position, node, axis1_offset, axis2_offset)
+         if is_meant_to_break(toolitem, node) then
             local node_definition = minetest.registered_nodes[node.name]
             dig_time = dig_time + minetest.get_dig_params(
                node_definition.groups,
                toolitem:get_tool_capabilities()
             ).time
          end
-      end
-   end
+   end, position, axis1_field, axis2_field)
 
    return dig_time
 end

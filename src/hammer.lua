@@ -19,7 +19,6 @@
 -- Like pickaxes, but mine in a 3x3.
 
 -- TODO add localization.
--- TODO add crafting recipes.
 -- TODO consider making hammers do extra knockback.
 
 -- Imports private namespace.
@@ -103,6 +102,24 @@ minetest.register_tool("gigatools:hammer_diamond", {
         }
     }
 })
+
+-- Crafting recipes.
+local craft_ingredients = {
+   bronze  = "default:bronzeblock",
+   steel   = "default:steelblock",
+   mese    = "default:mese",
+   diamond = "default:diamondblock"
+}
+for name, material in pairs(craft_ingredients) do
+    minetest.register_craft({
+        output = "gigatools:hammer_" .. name,
+        recipe = {
+            { material, material,      material },
+            { "",       "group:stick", ""       },
+            { "",       "group:stick", ""       }
+        }
+    })
+end
 
 
 

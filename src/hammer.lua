@@ -30,6 +30,7 @@ local _gigatools = ...
 
 
 
+-- Note for adding new hammers: multiply base item mining speeds by 1.7.
 minetest.register_tool("gigatools:hammer_steel", {
   description     = "Steel Hammer",
   inventory_image = "default_tool_steelpick.png",        -- TODO change
@@ -42,7 +43,7 @@ minetest.register_tool("gigatools:hammer_steel", {
      damage_groups       = { fleshy = 4 }, -- TODO change
 
      groupcaps = {
-        cracky = { times = { [1] = 10.0, [2] = 4.0, [3] = 2.0 }, uses = 20, maxlevel = 2 } -- TODO increase durability.
+        cracky = { times = { [1] = 6.8, [2] = 2.72, [3] = 1.36 }, uses = 20, maxlevel = 2 } -- TODO increase durability.
      }
   }
 })

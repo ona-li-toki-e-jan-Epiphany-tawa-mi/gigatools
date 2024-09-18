@@ -16,7 +16,7 @@
 -- along with gigatools. If not, see <https://www.gnu.org/licenses/>.
 
 -- Gigatools hammers submod.
--- Like pickaxes, but mine in a 3x3.
+-- Like pickaxes, but dig in a 3x3.
 
 -- NOTE: when adding new hammers, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.

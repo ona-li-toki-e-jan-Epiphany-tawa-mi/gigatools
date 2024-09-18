@@ -18,6 +18,9 @@
 -- Gigatools core mod.
 -- Handles inner workings of multi-node digging tools.
 
+-- TODO generalize system to work with aribitrarily sized dig tools.
+-- TODO place digging code into another file.
+
 
 
 -- Private namespace for internal functions.

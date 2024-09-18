@@ -25,10 +25,11 @@ local _gigatools = {}
 -- Global namespace.
 gigatools = {}
 
--- TODO
+-- TODO document.
 gigatools.registered_3x3_tools = {}
 
--- TODO
+-- TODO document.
+-- TODO add input validation
 function gigatools.register_3x3_tool(name)
    gigatools.registered_3x3_tools[name] = true
 end

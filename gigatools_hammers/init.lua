@@ -27,6 +27,11 @@
 
 
 
+-- Returns whether the mod with the given name is enabled.
+local function is_mod_enabled(name)
+   return nil ~= minetest.get_modpath(name)
+end
+
 --- Registers a new hammer toolitem.
 -- @param name Item name.
 -- @param crafting_material The name of the item to use as the crafting material
@@ -49,70 +54,72 @@ end
 
 
 
-register_hammer("gigatools_hammers:hammer_bronze", "default:bronzeblock", {
-    description     = "Bronze Hammer",
-    inventory_image = "default_tool_bronzepick.png", -- TODO change
-    sound           = { breaks  = "default_tool_breaks" },
-    groups          = { pickaxe = 1 },
+if is_mod_enabled("default") then
+   register_hammer("gigatools_hammers:hammer_bronze", "default:bronzeblock", {
+       description     = "Bronze Hammer",
+       inventory_image = "default_tool_bronzepick.png", -- TODO change
+       sound           = { breaks  = "default_tool_breaks" },
+       groups          = { pickaxe = 1 },
 
-    tool_capabilities = {
+       tool_capabilities = {
+           full_punch_interval = 1.7,
+           max_drop_level      = 1,
+           damage_groups       = { fleshy = 5 },
+
+           groupcaps = {
+              cracky = { times = { [1] = 7.65, [2] = 3.06, [3] = 1.53 }, uses = 180, maxlevel = 2 },
+           }
+       }
+   })
+
+   register_hammer("gigatools_hammers:hammer_steel", "default:steelblock", {
+     description     = "Steel Hammer",
+     inventory_image = "default_tool_steelpick.png", -- TODO change
+     sound           = { breaks  = "default_tool_breaks" },
+     groups          = { pickaxe = 1 },
+
+     tool_capabilities = {
         full_punch_interval = 1.7,
         max_drop_level      = 1,
         damage_groups       = { fleshy = 5 },
 
         groupcaps = {
-           cracky = { times = { [1] = 7.65, [2] = 3.06, [3] = 1.53 }, uses = 180, maxlevel = 2 },
+           cracky = { times = { [1] = 6.8, [2] = 2.72, [3] = 1.36 }, uses = 180, maxlevel = 2 }
         }
-    }
-})
-
-register_hammer("gigatools_hammers:hammer_steel", "default:steelblock", {
-  description     = "Steel Hammer",
-  inventory_image = "default_tool_steelpick.png", -- TODO change
-  sound           = { breaks  = "default_tool_breaks" },
-  groups          = { pickaxe = 1 },
-
-  tool_capabilities = {
-     full_punch_interval = 1.7,
-     max_drop_level      = 1,
-     damage_groups       = { fleshy = 5 },
-
-     groupcaps = {
-        cracky = { times = { [1] = 6.8, [2] = 2.72, [3] = 1.36 }, uses = 180, maxlevel = 2 }
      }
-  }
-})
+   })
 
-register_hammer("gigatools_hammers:hammer_mese", "default:mese", {
-    description     = "Mese Hammer",
-    inventory_image = "default_tool_mesepick.png", -- TODO change
-    sound           = { breaks  = "default_tool_breaks" },
-    groups          = { pickaxe = 1 },
+   register_hammer("gigatools_hammers:hammer_mese", "default:mese", {
+       description     = "Mese Hammer",
+       inventory_image = "default_tool_mesepick.png", -- TODO change
+       sound           = { breaks  = "default_tool_breaks" },
+       groups          = { pickaxe = 1 },
 
-    tool_capabilities = {
-        full_punch_interval = 1.53,
-        max_drop_level      = 3,
-        damage_groups       = { fleshy = 6 },
+       tool_capabilities = {
+           full_punch_interval = 1.53,
+           max_drop_level      = 3,
+           damage_groups       = { fleshy = 6 },
 
-        groupcaps={
-            cracky = { times = { [1] = 4.08, [2] = 2.04, [3] = 1.02 }, uses = 180, maxlevel = 3 },
-        }
-    }
-})
+           groupcaps={
+               cracky = { times = { [1] = 4.08, [2] = 2.04, [3] = 1.02 }, uses = 180, maxlevel = 3 },
+           }
+       }
+   })
 
-register_hammer("gigatools_hammers:hammer_diamond", "default:diamondblock", {
-    description     = "Diamond Hammer",
-    inventory_image = "default_tool_diamondpick.png", -- TODO change
-    sound           = { breaks  = "default_tool_breaks" },
-    groups          = { pickaxe = 1 },
+   register_hammer("gigatools_hammers:hammer_diamond", "default:diamondblock", {
+       description     = "Diamond Hammer",
+       inventory_image = "default_tool_diamondpick.png", -- TODO change
+       sound           = { breaks  = "default_tool_breaks" },
+       groups          = { pickaxe = 1 },
 
-    tool_capabilities = {
-        full_punch_interval = 1.53,
-        max_drop_level      = 3,
-        damage_groups       = { fleshy = 6 },
+       tool_capabilities = {
+           full_punch_interval = 1.53,
+           max_drop_level      = 3,
+           damage_groups       = { fleshy = 6 },
 
-        groupcaps = {
-            cracky = { times = { [1] = 3.4, [2] = 1.7, [3] = 0.85 }, uses = 270, maxlevel = 3 },
-        }
-    }
-})
+           groupcaps = {
+               cracky = { times = { [1] = 3.4, [2] = 1.7, [3] = 0.85 }, uses = 270, maxlevel = 3 },
+           }
+       }
+   })
+end

@@ -39,11 +39,6 @@ function _gigatools.load_module(path)
    return loadfile(minetest.get_modpath("gigatools") .. "/" .. path)(_gigatools)
 end
 
--- Returns whether the mod with the given name is enabled.
-function _gigatools.is_mod_enabled(name)
-   return nil ~= minetest.get_modpath(name)
-end
-
 
 
 _gigatools.load_module("api.lua")

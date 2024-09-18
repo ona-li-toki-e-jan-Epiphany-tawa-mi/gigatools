@@ -181,7 +181,7 @@ local function get_3x3_plane_dig_time(position, axis1_field, axis2_field, punche
    end, position, axis1_field, axis2_field)
 
    if block_count > 0 then
-      return actual_dig_time / (1 + math.log(block_count))
+      return actual_dig_time / (1 + math.log(block_count, 10))
    else
       return 0.0
    end

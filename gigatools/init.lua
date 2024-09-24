@@ -18,7 +18,6 @@
 -- Gigatools core mod.
 -- Handles inner workings of multi-node digging tools.
 
--- TODO generalize system to work with aribitrarily sized dig tools.
 -- TODO place digging code into another file.
 
 
@@ -48,7 +47,7 @@ _gigatools.load_module("api.lua")
 
 
 
---- Calls a function on 3x3 plane of nodes along the specified axes.
+--- Calls a function on a 2D plane of nodes along the specified axes.
 -- @param func The function to call on each block in the plane.
 -- Parameters:
 --   position The position of the node.
@@ -57,12 +56,17 @@ _gigatools.load_module("api.lua")
 --   axis2_offset The offset of the node from the center along the second axis.
 -- @param position The position of the center of the plane.
 -- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
--- @param axis1_field The name of the field that represents the second axis (i.e. "z".)
-local function apply_3x3_plane(func, position, axis1_field, axis2_field)
+-- @param axis1_size The size of the plane along axis1. Should be odd and >= 1.
+-- @param axis2_field The name of the field that represents the second axis (i.e. "z".)
+-- @param axis2_size The size of the plane along axis2. Should be odd and >= 1.
+local function apply_2d_plane(func, position, axis1_field, axis1_size, axis2_field, axis2_size)
    local offset_position = table.copy(position)
 
-   for axis1_offset=-1,1 do
-      for axis2_offset=-1,1 do
+   local axis1_half_size = math.floor(axis1_size / 2)
+   local axis2_half_size = math.floor(axis2_size / 2)
+
+   for axis1_offset=-axis1_half_size,axis1_half_size do
+      for axis2_offset=-axis2_half_size,axis2_half_size do
          offset_position[axis1_field] = position[axis1_field] + axis1_offset
          offset_position[axis2_field] = position[axis2_field] + axis2_offset
 
@@ -109,67 +113,81 @@ end
 
 
 
---- Breaks a 3x3 plane of nodes along the specified axes.
+--- Digs a 2D plane of nodes along the specified axes.
 -- @param position The position of the center of the plane. The node at this
 -- location will not be broken.
 -- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
--- @param axis1_field The name of the field that represents the second axis (i.e. "z".)
+-- @param axis1_size The size of the plane along axis1. Should be odd and >= 1.
+-- @param axis2_field The name of the field that represents the second axis (i.e. "z".)
+-- @param axis2_size The size of the plane along axis2. Should be odd and >= 1.
 -- @param digger The ObjectRef thats breaking the node. May be nil.
 -- @param toolitem The ItemStack to use to break the node.
-local function break_3x3_plane(position, axis1_field, axis2_field, digger, toolitem)
-   apply_3x3_plane(function(position, node, axis1_offset, axis2_offset)
+local function dig_2d_plane(position, axis1_field, axis1_size, axis2_field, axis2_size, digger, toolitem)
+   apply_2d_plane(function(position, node, axis1_offset, axis2_offset)
          if (0 ~= axis1_offset or 0 ~= axis2_offset) and is_meant_to_break(toolitem, node) then
             minetest.node_dig(position, node, digger)
          end
-   end, position, axis1_field, axis2_field)
+   end, position, axis1_field, axis1_size, axis2_field, axis2_size)
 end
 
--- Used to check if a player has use a 3x3 tool dig a node, meaning that the
--- resulting calls from register_on_nodedig() are the result of the tool's 3x3
+-- Used to check if a player has used a 2D tool to dig a node, meaning that the
+-- resulting calls from register_on_dignode() are the result of the tool's 2D
 -- digging. This is to prevent recursively mining nodes.
-local is_using_3x3_tool = {}
+local is_using_2d_tool = {}
 
---- Handles checking for the use of a 3x3 tool and digging the extra nodes.
-local function try_dig_with_3x3_tool(position, old_node, digger)
+-- TODO resolve item aliases.
+--- Handles checking for the use of a 2D tool and digging the extra nodes.
+local function try_dig_with_2d_tool(position, old_node, digger)
    if nil == digger or not digger:is_player() then return end
    local player_name = digger:get_player_name()
-   if is_using_3x3_tool[player_name] then return end
+   if is_using_2d_tool[player_name] then return end
 
-   local wielded_item = digger:get_wielded_item()
-   if not gigatools.registered_3x3_tools[wielded_item:get_name()] then return end
-   -- Only run 3x3 breaking if the tool is meant to break that node.
+   local wielded_item   = digger:get_wielded_item()
+   local dig_dimensions = gigatools.registered_2d_tools[wielded_item:get_name()]
+   if nil == dig_dimensions                         then return end
    if not is_meant_to_break(wielded_item, old_node) then return end
 
-   is_using_3x3_tool[player_name] = true
-   if is_player_facing_y_axis(digger) then
-      break_3x3_plane(position, "x", "z", digger, wielded_item)
-   elseif is_player_facing_x_axis(digger) then
-      break_3x3_plane(position, "z", "y", digger, wielded_item)
+   is_using_2d_tool[player_name] = true
+   if is_player_facing_x_axis(digger) then
+      if is_player_facing_y_axis(digger) then
+         dig_2d_plane(position, "z", dig_dimensions.width, "x", dig_dimensions.height, digger, wielded_item)
+      else
+         dig_2d_plane(position, "z", dig_dimensions.width, "y", dig_dimensions.height, digger, wielded_item)
+      end
    else
-      break_3x3_plane(position, "x", "y", digger, wielded_item)
+      if is_player_facing_y_axis(digger) then
+         dig_2d_plane(position, "x", dig_dimensions.width, "z", dig_dimensions.height, digger, wielded_item)
+      else
+         dig_2d_plane(position, "x", dig_dimensions.width, "y", dig_dimensions.height, digger, wielded_item)
+      end
    end
-   is_using_3x3_tool[player_name] = nil
+   is_using_2d_tool[player_name] = nil
 end
-minetest.register_on_dignode(try_dig_with_3x3_tool)
+minetest.register_on_dignode(try_dig_with_2d_tool)
 
 
 
+-- TODO resolve item aliases.
 --- Gets the time to dig a 3x3 plane of nodes along the specified axes for a 3x3
 --- digging tool.
 -- The time returned is non-linear; mining more blocks at once will yield a
 -- faster dig time per block.
 -- @param position The position of the center of the plane.
 -- @param axis1_field The name of the field that represents the first axis (i.e. "x".)
--- @param axis1_field The name of the field that represents the second axis (i.e. "z".)
+-- @param axis1_size The size of the plane along axis1. Should be odd and >= 1.
+-- @param axis2_field The name of the field that represents the second axis (i.e. "z".)
+-- @param axis2_size The size of the plane along axis2. Should be odd and >= 1.
 -- @param digger The ObjectRef thats punching the node. May be nil.
 -- @param toolitem The ItemStack to use to punch the node.
 -- @return The dig time, or 0.0, if none of the blocks are meant to be broken by
 -- the tool.
-local function get_3x3_plane_dig_time(position, axis1_field, axis2_field, puncher, toolitem)
+local function get_2d_plane_dig_time( position, axis1_field, axis1_size, axis2_field, axis2_size, puncher
+                                    , toolitem
+                                    )
    local actual_dig_time = 0.0
    local block_count     = 0
 
-   apply_3x3_plane(function(position, node, axis1_offset, axis2_offset)
+   apply_2d_plane(function(position, node, axis1_offset, axis2_offset)
          if is_meant_to_break(toolitem, node) then
             local node_definition = minetest.registered_nodes[node.name]
             actual_dig_time = actual_dig_time + minetest.get_dig_params(
@@ -178,7 +196,7 @@ local function get_3x3_plane_dig_time(position, axis1_field, axis2_field, punche
             ).time
             block_count = 1 + block_count
          end
-   end, position, axis1_field, axis2_field)
+   end, position, axis1_field, axis1_size, axis2_field, axis2_size)
 
    if block_count > 0 then
       return actual_dig_time / (1 + math.log(block_count, 10))
@@ -187,26 +205,57 @@ local function get_3x3_plane_dig_time(position, axis1_field, axis2_field, punche
    end
 end
 
---- Adjusts the dig speed of 3x3 tools to account for how many blocks are to be
+-- TODO resolve item aliases.
+--- Adjusts the dig speed of 2d tools to account for how many blocks are to be
 --- broken. Yup, you can't cheat and break cobblestone by obsidian.
-local function try_adjust_3x3_tool_dig_time(position, node, puncher, pointed_thing)
+local function try_adjust_2d_tool_dig_time(position, node, puncher, pointed_thing)
    if nil == puncher or not puncher:is_player() then return end
 
-   local wielded_item = puncher:get_wielded_item()
-   if not gigatools.registered_3x3_tools[wielded_item:get_name()] then return end
-   -- Only run 3x3 breaking if the tool is meant to break that node.
-   if not is_meant_to_break(wielded_item, node) then return end
+   local wielded_item   = puncher:get_wielded_item()
+   local dig_dimensions = gigatools.registered_2d_tools[wielded_item:get_name()]
+   if nil == gigatools.registered_2d_tools[wielded_item:get_name()] then return end
+   if not is_meant_to_break(wielded_item, node)                     then return end
 
    -- Wipe previous dig time adjustments.
    wielded_item:get_meta():set_tool_capabilities(nil)
 
    local dig_time
-   if is_player_facing_y_axis(puncher) then
-      dig_time = get_3x3_plane_dig_time(position, "x", "z", puncher, wielded_item)
-   elseif is_player_facing_x_axis(puncher) then
-      dig_time = get_3x3_plane_dig_time(position, "z", "y", puncher, wielded_item)
+   if is_player_facing_x_axis(puncher) then
+      if is_player_facing_y_axis(puncher) then
+         dig_time = get_2d_plane_dig_time(
+            position,
+            "z", dig_dimensions.width,
+            "x", dig_dimensions.height,
+            puncher,
+            wielded_item
+         )
+      else
+         dig_time = get_2d_plane_dig_time(
+            position,
+            "z", dig_dimensions.width,
+            "y", dig_dimensions.height,
+            puncher,
+            wielded_item
+         )
+      end
    else
-      dig_time = get_3x3_plane_dig_time(position, "x", "y", puncher, wielded_item)
+      if is_player_facing_y_axis(puncher) then
+         dig_time = get_2d_plane_dig_time(
+            position,
+            "x", dig_dimensions.width,
+            "z", dig_dimensions.height,
+            puncher,
+            wielded_item
+         )
+      else
+         dig_time = get_2d_plane_dig_time(
+            position,
+            "x", dig_dimensions.width,
+            "y", dig_dimensions.height,
+            puncher,
+            wielded_item
+         )
+      end
    end
 
    -- 0.0 if there were no diggable nodes,
@@ -224,4 +273,4 @@ local function try_adjust_3x3_tool_dig_time(position, node, puncher, pointed_thi
    -- Write out new dig times.
    puncher:set_wielded_item(wielded_item)
 end
-minetest.register_on_punchnode(try_adjust_3x3_tool_dig_time)
+minetest.register_on_punchnode(try_adjust_2d_tool_dig_time)

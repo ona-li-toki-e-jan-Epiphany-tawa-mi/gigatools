@@ -18,18 +18,30 @@
 -- Gigatools API module.
 
 -- Imports private namespace.
-local _gigatools = {}
+local _gigatools = ...
 
 
 
 -- Global namespace.
 gigatools = {}
 
--- TODO document.
-gigatools.registered_3x3_tools = {}
+--- A table of 2D dig tools.
+-- Keys are full item names (no aliases,) values are a table with the following elements:\
+--   width: the width of the plane to dig.
+--   height: the height of the plane to dig.
+-- Do not edit directly, use gigatools.register_2d_tool() instead.
+gigatools.registered_2d_tools = {}
 
--- TODO document.
 -- TODO add input validation
-function gigatools.register_3x3_tool(name)
-   gigatools.registered_3x3_tools[name] = true
+-- TODO Handle item name aliases.
+-- TODO Throw error on fractional dimensions.
+-- TODO Throw error on registering even dimensions.
+--- Registers a toolitem as a 2D dig tool.
+-- @param name The item's name.
+-- @param width The width of the plane to dig.
+-- @param height The height of the plane to dig.
+-- @return Whether the item was successfully registered.
+function gigatools.register_2d_tool(name, width, height)
+   gigatools.registered_2d_tools[name] = { width = width, height = height }
+   return true
 end

@@ -26,18 +26,48 @@ local _gigatools = ...
 gigatools = {}
 
 --- A table of 2D dig tools.
--- Keys are full item names (no aliases,) values are a table with the following elements:\
---   width: the width of the plane to dig.
---   height: the height of the plane to dig.
+-- Keys are full item names (no aliases,) values are a table with the following elements:
+--   width: the width of the plane to dig. Must be odd and >= 1.
+--   height: the height of the plane to dig. Must be odd and >= 1.
 -- Do not edit directly, use gigatools.register_2d_tool() instead.
 gigatools.registered_2d_tools = {}
 
--- TODO Throw error on fractional dimensions.
--- TODO Throw error on registering even dimensions.
+--- Validates a dimension size for gigatools.registered_2d_tools.
+-- @param size The size value.
+-- @param name The name of the size (i.e. "width") to show in error logs.
+-- @param __func__ The name of the function to show in error logs.
+local function is_dimension_size_valid(size, name, __func__)
+   if "number" ~= type(size) then
+      _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. dump(size)
+                              .. "'. Expected number, got '" .. type(size) .. "'")
+      return false
+   end
+
+   if 1 > size then
+      _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. size
+                              .. "'. Expected number >= 1")
+      return false
+   end
+
+   if size ~= math.floor(size) then
+      _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. size
+                              .. "'. Expected integer, got float")
+      return false
+   end
+
+   if 0 == size % 2 then
+      _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. size
+                              .. "'. Expected odd number")
+      return false
+   end
+
+   return true
+end
+
 --- Registers a toolitem as a 2D dig tool.
 -- @param name The item's name.
--- @param width The width of the plane to dig.
--- @param height The height of the plane to dig.
+-- @param width The width of the plane to dig. Must be odd and >= 1.
+-- @param height The height of the plane to dig. Must be odd and >= 1.
 -- @return Whether the item was successfully registered.
 function gigatools.register_2d_tool(name, width, height)
    local __func__ = "gigatools.register_2d_tool"
@@ -48,27 +78,8 @@ function gigatools.register_2d_tool(name, width, height)
       return false
    end
 
-   if "number" ~= type(width) then
-      _gigatools.log("error", __func__ .. ": got invalid width '" .. dump(width)
-                              .. "'. Expected number, got '" .. type(width) .. "'")
-      return false
-   end
-   if 1 > width then
-      _gigatools.log("error", __func__ .. ": got invalid width '" .. width
-                              .. "'. Expected number >= 1")
-      return false
-   end
-
-   if "number" ~= type(height) then
-      _gigatools.log("error", __func__ .. ": got invalid height '" .. dump(height)
-                              .. "'. Expected string number, got '" .. type(height) .. "'")
-      return false
-   end
-   if 1 > height then
-      _gigatools.log("error", __func__ .. ": got invalid height '" .. height
-                              .. "'. Expected number greater than or equal to 1")
-      return false
-   end
+   if not is_dimension_size_valid(width,  "width",  __func__) then return false end
+   if not is_dimension_size_valid(height, "height", __func__) then return false end
 
    _gigatools.log("verbose", __func__  .. ": registered 2D toolitem '" .. name .. "'")
    gigatools.registered_2d_tools[_gigatools.resolve_alias(name)] = { width = width, height = height }

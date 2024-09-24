@@ -32,7 +32,6 @@ gigatools = {}
 -- Do not edit directly, use gigatools.register_2d_tool() instead.
 gigatools.registered_2d_tools = {}
 
--- TODO add input validation
 -- TODO Handle item name aliases.
 -- TODO Throw error on fractional dimensions.
 -- TODO Throw error on registering even dimensions.
@@ -42,6 +41,37 @@ gigatools.registered_2d_tools = {}
 -- @param height The height of the plane to dig.
 -- @return Whether the item was successfully registered.
 function gigatools.register_2d_tool(name, width, height)
+   local __func__ = "gigatools.register_2d_tool"
+
+   if "string" ~= type(name) then
+      _gigatools.log("error", __func__ .. ": got invalid name '" .. dump(name)
+                              .. "'. Expected string, got '" .. type(name) .. "'")
+      return false
+   end
+
+   if "number" ~= type(width) then
+      _gigatools.log("error", __func__ .. ": got invalid width '" .. dump(width)
+                              .. "'. Expected number, got '" .. type(width) .. "'")
+      return false
+   end
+   if 1 > width then
+      _gigatools.log("error", __func__ .. ": got invalid width '" .. width
+                              .. "'. Expected number >= 1")
+      return false
+   end
+
+   if "number" ~= type(height) then
+      _gigatools.log("error", __func__ .. ": got invalid height '" .. dump(height)
+                              .. "'. Expected string number, got '" .. type(height) .. "'")
+      return false
+   end
+   if 1 > height then
+      _gigatools.log("error", __func__ .. ": got invalid height '" .. height
+                              .. "'. Expected number greater than or equal to 1")
+      return false
+   end
+
+   _gigatools.log("verbose", __func__  .. ": registered 2D toolitem '" .. name .. "'")
    gigatools.registered_2d_tools[name] = { width = width, height = height }
    return true
 end

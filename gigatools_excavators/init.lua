@@ -21,8 +21,9 @@
 -- NOTE: when adding new excavators, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.
 
--- TODO add localization.
 -- TODO consider making hammers do extra knockback.
+
+local S = minetest.get_translator("gigatools_excavators")
 
 
 
@@ -55,7 +56,7 @@ end
 
 if is_mod_enabled("default") then
    register_excavator("gigatools_excavators:excavator_bronze", "default:bronzeblock", {
-       description     = "Bronze Excavator",
+       description     = S("Bronze Excavator"),
        inventory_image = "default_tool_bronzeshovel.png", -- TODO change
        sound           = { breaks  = "default_tool_breaks" },
        groups          = { shovel = 1 },
@@ -72,7 +73,7 @@ if is_mod_enabled("default") then
    })
 
    register_excavator("gigatools_excavators:excavator_steel", "default:steelblock", {
-     description     = "Steel Excavator",
+     description     = S("Steel Excavator"),
      inventory_image = "default_tool_steelshovel.png", -- TODO change
      sound           = { breaks  = "default_tool_breaks" },
      groups          = { shovel = 1 },
@@ -89,7 +90,7 @@ if is_mod_enabled("default") then
    })
 
    register_excavator("gigatools_excavators:excavator_mese", "default:mese", {
-       description     = "Mese Excavator",
+       description     = S("Mese Excavator"),
        inventory_image = "default_tool_meseshovel.png", -- TODO change
        sound           = { breaks  = "default_tool_breaks" },
        groups          = { shovel = 1 },
@@ -106,7 +107,7 @@ if is_mod_enabled("default") then
    })
 
    register_excavator("gigatools_excavators:excavator_diamond", "default:diamondblock", {
-       description     = "Diamond Excavator",
+       description     = S("Diamond Excavator"),
        inventory_image = "default_tool_diamondshovel.png", -- TODO change
        sound           = { breaks  = "default_tool_breaks" },
        groups          = { shovel = 1 },

@@ -21,9 +21,10 @@
 -- NOTE: when adding new hammers, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.
 
--- TODO add localization.
 -- TODO consider making hammers do extra knockback.
 -- TODO add Mineclonia/VoxeLibre support.
+
+local S = minetest.get_translator("gigatools_hammers")
 
 
 
@@ -56,7 +57,7 @@ end
 
 if is_mod_enabled("default") then
    register_hammer("gigatools_hammers:hammer_bronze", "default:bronzeblock", {
-       description     = "Bronze Hammer",
+       description     = S("Bronze Hammer"),
        inventory_image = "default_tool_bronzepick.png", -- TODO change
        sound           = { breaks  = "default_tool_breaks" },
        groups          = { pickaxe = 1 },
@@ -73,7 +74,7 @@ if is_mod_enabled("default") then
    })
 
    register_hammer("gigatools_hammers:hammer_steel", "default:steelblock", {
-     description     = "Steel Hammer",
+     description     = S("Steel Hammer"),
      inventory_image = "default_tool_steelpick.png", -- TODO change
      sound           = { breaks  = "default_tool_breaks" },
      groups          = { pickaxe = 1 },
@@ -90,7 +91,7 @@ if is_mod_enabled("default") then
    })
 
    register_hammer("gigatools_hammers:hammer_mese", "default:mese", {
-       description     = "Mese Hammer",
+       description     = S("Mese Hammer"),
        inventory_image = "default_tool_mesepick.png", -- TODO change
        sound           = { breaks  = "default_tool_breaks" },
        groups          = { pickaxe = 1 },
@@ -107,7 +108,7 @@ if is_mod_enabled("default") then
    })
 
    register_hammer("gigatools_hammers:hammer_diamond", "default:diamondblock", {
-       description     = "Diamond Hammer",
+       description     = S("Diamond Hammer"),
        inventory_image = "default_tool_diamondpick.png", -- TODO change
        sound           = { breaks  = "default_tool_breaks" },
        groups          = { pickaxe = 1 },

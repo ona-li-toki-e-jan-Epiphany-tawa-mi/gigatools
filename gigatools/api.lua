@@ -32,7 +32,6 @@ gigatools = {}
 -- Do not edit directly, use gigatools.register_2d_tool() instead.
 gigatools.registered_2d_tools = {}
 
--- TODO Handle item name aliases.
 -- TODO Throw error on fractional dimensions.
 -- TODO Throw error on registering even dimensions.
 --- Registers a toolitem as a 2D dig tool.
@@ -72,6 +71,6 @@ function gigatools.register_2d_tool(name, width, height)
    end
 
    _gigatools.log("verbose", __func__  .. ": registered 2D toolitem '" .. name .. "'")
-   gigatools.registered_2d_tools[name] = { width = width, height = height }
+   gigatools.registered_2d_tools[_gigatools.resolve_alias(name)] = { width = width, height = height }
    return true
 end

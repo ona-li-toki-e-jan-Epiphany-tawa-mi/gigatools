@@ -34,6 +34,11 @@ function _gigatools.log(level, text)
    minetest.log(level, "[gigatools] " .. text)
 end
 
+--- Resolves item name aliases.
+function _gigatools.resolve_alias(name)
+   return minetest.registered_aliases[name] or name
+end
+
 --- Loads and executes a Gigatools Lua module.
 -- @param path The file path of the module relative to the Gigatools directory.
 -- @return The return value of the Lua module.
@@ -135,7 +140,6 @@ end
 -- digging. This is to prevent recursively mining nodes.
 local is_using_2d_tool = {}
 
--- TODO resolve item aliases.
 --- Handles checking for the use of a 2D tool and digging the extra nodes.
 local function try_dig_with_2d_tool(position, old_node, digger)
    if nil == digger or not digger:is_player() then return end
@@ -143,7 +147,7 @@ local function try_dig_with_2d_tool(position, old_node, digger)
    if is_using_2d_tool[player_name] then return end
 
    local wielded_item   = digger:get_wielded_item()
-   local dig_dimensions = gigatools.registered_2d_tools[wielded_item:get_name()]
+   local dig_dimensions = gigatools.registered_2d_tools[_gigatools.resolve_alias(wielded_item:get_name())]
    if nil == dig_dimensions                         then return end
    if not is_meant_to_break(wielded_item, old_node) then return end
 
@@ -167,7 +171,6 @@ minetest.register_on_dignode(try_dig_with_2d_tool)
 
 
 
--- TODO resolve item aliases.
 --- Gets the time to dig a 3x3 plane of nodes along the specified axes for a 3x3
 --- digging tool.
 -- The time returned is non-linear; mining more blocks at once will yield a
@@ -189,7 +192,7 @@ local function get_2d_plane_dig_time( position, axis1_field, axis1_size, axis2_f
 
    apply_2d_plane(function(position, node, axis1_offset, axis2_offset)
          if is_meant_to_break(toolitem, node) then
-            local node_definition = minetest.registered_nodes[node.name]
+            local node_definition = minetest.registered_nodes[_gigatools.resolve_alias(node.name)]
             actual_dig_time = actual_dig_time + minetest.get_dig_params(
                node_definition.groups,
                toolitem:get_tool_capabilities()
@@ -205,14 +208,13 @@ local function get_2d_plane_dig_time( position, axis1_field, axis1_size, axis2_f
    end
 end
 
--- TODO resolve item aliases.
 --- Adjusts the dig speed of 2d tools to account for how many blocks are to be
 --- broken. Yup, you can't cheat and break cobblestone by obsidian.
 local function try_adjust_2d_tool_dig_time(position, node, puncher, pointed_thing)
    if nil == puncher or not puncher:is_player() then return end
 
    local wielded_item   = puncher:get_wielded_item()
-   local dig_dimensions = gigatools.registered_2d_tools[wielded_item:get_name()]
+   local dig_dimensions = gigatools.registered_2d_tools[_gigatools.resolve_alias(wielded_item:get_name())]
    if nil == gigatools.registered_2d_tools[wielded_item:get_name()] then return end
    if not is_meant_to_break(wielded_item, node)                     then return end
 

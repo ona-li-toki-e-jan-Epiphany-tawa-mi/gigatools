@@ -227,7 +227,7 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
       width_axis,  dig_dimensions.width,
       height_axis, dig_dimensions.height,
       depth_axis,  dig_dimensions.depth * depth_axis_sign,
-      function(position, node, width_offset, height_offset)
+      function(position, node, width_offset, height_offset, depth_offset)
          if (0 ~= width_offset or 0 ~= height_offset or 0 ~= depth_offset)
             and is_meant_to_break(wielded_item, node)
          then

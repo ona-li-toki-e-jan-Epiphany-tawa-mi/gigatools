@@ -25,18 +25,21 @@ local _gigatools = ...
 -- Global namespace.
 gigatools = {}
 
---- A table of 2D dig tools.
+--- A table of multinode dig tools.
 -- Keys are full item names (no aliases,) values are a table with the following elements:
---   width: the width of the plane to dig. Must be odd and >= 1.
---   height: the height of the plane to dig. Must be odd and >= 1.
--- Do not edit directly, use gigatools.register_2d_tool() instead.
-gigatools.registered_2d_tools = {}
+--   width: the width of the cuboid to dig. Must be an odd integer >= 1.
+--   height: the height of the cuboid to dig. Must be an odd integer >= 1.
+--   depth: the depth of the cuboid to dig. Must be an integer != 0.
+-- Do not edit directly, use @{gigatools.register_multinode_tool} instead.
+gigatools.registered_multinode_tools = {}
 
---- Validates a dimension size for gigatools.registered_2d_tools.
+--- Validates a dimension size for @{gigatools.registered_multinode_tools}.
 -- @param size The size value.
+-- @param can_be_even Whether the dimension can be even.
 -- @param name The name of the size (i.e. "width") to show in error logs.
 -- @param __func__ The name of the function to show in error logs.
-local function is_dimension_size_valid(size, name, __func__)
+-- @return Whether the size is valid.
+local function is_dimension_size_valid(size, can_be_even, name, __func__)
    if "number" ~= type(size) then
       _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. dump(size)
                               .. "'. Expected number, got '" .. type(size) .. "'")
@@ -55,7 +58,7 @@ local function is_dimension_size_valid(size, name, __func__)
       return false
    end
 
-   if 0 == size % 2 then
+   if not can_be_even and 0 == size % 2 then
       _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. size
                               .. "'. Expected odd number")
       return false
@@ -64,12 +67,13 @@ local function is_dimension_size_valid(size, name, __func__)
    return true
 end
 
---- Registers a toolitem as a 2D dig tool.
+--- Registers a toolitem as a multinode dig tool.
 -- @param name The item's name.
--- @param width The width of the plane to dig. Must be odd and >= 1.
--- @param height The height of the plane to dig. Must be odd and >= 1.
+-- @param width The width of the cuboid to dig. Must be an odd integer >= 1.
+-- @param height The height of the cuboid to dig. Must be an odd integer >= 1.
+-- @param depth The depth of the cuboid to dig. Must be an integer != 0.
 -- @return Whether the item was successfully registered.
-function gigatools.register_2d_tool(name, width, height)
+function gigatools.register_multinode_tool(name, width, height, depth)
    local __func__ = "gigatools.register_2d_tool"
 
    if "string" ~= type(name) then
@@ -78,10 +82,15 @@ function gigatools.register_2d_tool(name, width, height)
       return false
    end
 
-   if not is_dimension_size_valid(width,  "width",  __func__) then return false end
-   if not is_dimension_size_valid(height, "height", __func__) then return false end
+   if not is_dimension_size_valid(width,  false, "width",  __func__) then return false end
+   if not is_dimension_size_valid(height, false, "height", __func__) then return false end
+   if not is_dimension_size_valid(depth,  true,  "depth",  __func__) then return false end
 
-   _gigatools.log("verbose", __func__  .. ": registered 2D toolitem '" .. name .. "'")
-   gigatools.registered_2d_tools[_gigatools.resolve_alias(name)] = { width = width, height = height }
+   _gigatools.log("verbose", __func__  .. ": registered multinode toolitem '" .. name .. "'")
+   gigatools.registered_multinode_tools[_gigatools.resolve_alias(name)] = {
+      width  = width,
+      height = height,
+      depth  = depth
+   }
    return true
 end

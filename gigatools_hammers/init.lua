@@ -41,7 +41,7 @@ end
 -- minetest.register_tool().
 local function register_hammer(name, crafting_material, definition)
    minetest.register_tool(name, definition)
-   gigatools.register_2d_tool(name, 3, 3)
+      gigatools.register_multinode_tool(name, 3, 3, 1)
 
    minetest.register_craft({
         output = name,

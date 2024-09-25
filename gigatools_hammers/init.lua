@@ -40,8 +40,11 @@ end
 -- @param definition The item's definition as expected by
 -- minetest.register_tool().
 local function register_hammer(name, crafting_material, definition)
+   definition.sound  = { breaks  = "default_tool_breaks" }
+   definition.groups = { pickaxe = 1 },
    minetest.register_tool(name, definition)
-      gigatools.register_multinode_tool(name, 3, 3, 1)
+
+   gigatools.register_multinode_tool(name, 3, 3, 1)
 
    minetest.register_craft({
         output = name,
@@ -59,8 +62,6 @@ if is_mod_enabled("default") then
    register_hammer("gigatools_hammers:hammer_bronze", "default:bronzeblock", {
        description     = S("Bronze Hammer"),
        inventory_image = "gigatools_hammers_bronze_hammer.png",
-       sound           = { breaks  = "default_tool_breaks" },
-       groups          = { pickaxe = 1 },
 
        tool_capabilities = {
            full_punch_interval = 1.7,
@@ -76,8 +77,6 @@ if is_mod_enabled("default") then
    register_hammer("gigatools_hammers:hammer_steel", "default:steelblock", {
      description     = S("Steel Hammer"),
      inventory_image = "gigatools_hammers_steel_hammer.png",
-     sound           = { breaks  = "default_tool_breaks" },
-     groups          = { pickaxe = 1 },
 
      tool_capabilities = {
         full_punch_interval = 1.7,
@@ -93,8 +92,6 @@ if is_mod_enabled("default") then
    register_hammer("gigatools_hammers:hammer_mese", "default:mese", {
        description     = S("Mese Hammer"),
        inventory_image = "gigatools_hammers_mese_hammer.png",
-       sound           = { breaks  = "default_tool_breaks" },
-       groups          = { pickaxe = 1 },
 
        tool_capabilities = {
            full_punch_interval = 1.53,
@@ -110,8 +107,6 @@ if is_mod_enabled("default") then
    register_hammer("gigatools_hammers:hammer_diamond", "default:diamondblock", {
        description     = S("Diamond Hammer"),
        inventory_image = "gigatools_hammers_diamond_hammer.png",
-       sound           = { breaks  = "default_tool_breaks" },
-       groups          = { pickaxe = 1 },
 
        tool_capabilities = {
            full_punch_interval = 1.53,

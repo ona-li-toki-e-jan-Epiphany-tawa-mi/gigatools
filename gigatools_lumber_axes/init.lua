@@ -39,7 +39,10 @@ end
 -- @param definition The item's definition as expected by
 -- minetest.register_tool().
 local function register_lumber_axe(name, crafting_material, definition)
+   definition.sound  = { breaks = "default_tool_breaks" }
+   definition.groups = { axe    = 1 }
    minetest.register_tool(name, definition)
+
    gigatools.register_multinode_tool(name, 3, 3, 3)
 
    minetest.register_craft({
@@ -58,8 +61,6 @@ if is_mod_enabled("default") then
    register_lumber_axe("gigatools_lumber_axes:lumber_axe_bronze", "default:bronzeblock", {
        description     = S("Bronze Lumber Axe"),
        inventory_image = "gigatools_lumber_axes_bronze_lumber_axe.png",
-       sound           = { breaks = "default_tool_breaks" },
-       groups          = { axe    = 1 },
 
        tool_capabilities = {
            full_punch_interval = 1.7,
@@ -75,8 +76,6 @@ if is_mod_enabled("default") then
    register_lumber_axe("gigatools_lumber_axes:lumber_axe_steel", "default:steelblock", {
      description     = S("Steel Lumber Axe"),
      inventory_image = "gigatools_lumber_axes_steel_lumber_axe.png",
-     sound           = { breaks = "default_tool_breaks" },
-     groups          = { axe    = 1 },
 
      tool_capabilities = {
         full_punch_interval = 1.7,
@@ -92,8 +91,6 @@ if is_mod_enabled("default") then
    register_lumber_axe("gigatools_lumber_axes:lumber_axe_mese", "default:mese", {
        description     = S("Mese Lumber Axe"),
        inventory_image = "gigatools_lumber_axes_mese_lumber_axe.png",
-       sound           = { breaks = "default_tool_breaks" },
-       groups          = { axe    = 1 },
 
        tool_capabilities = {
            full_punch_interval = 1.53,
@@ -109,8 +106,6 @@ if is_mod_enabled("default") then
    register_lumber_axe("gigatools_lumber_axes:lumber_axe_diamond", "default:diamondblock", {
        description     = S("Diamond Lumber Axe"),
        inventory_image = "gigatools_lumber_axes_diamond_lumber_axe.png",
-       sound           = { breaks = "default_tool_breaks" },
-       groups          = { axe    = 1 },
 
        tool_capabilities = {
            full_punch_interval = 1.53,

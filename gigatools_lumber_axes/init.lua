@@ -57,7 +57,7 @@ end
 if is_mod_enabled("default") then
    register_lumber_axe("gigatools_lumber_axes:lumber_axe_bronze", "default:bronzeblock", {
        description     = S("Bronze Lumber Axe"),
-       inventory_image = "default_tool_bronzeaxe.png", -- TODO change
+       inventory_image = "gigatools_lumber_axes_bronze_lumber_axe.png",
        sound           = { breaks = "default_tool_breaks" },
        groups          = { axe    = 1 },
 
@@ -74,7 +74,7 @@ if is_mod_enabled("default") then
 
    register_lumber_axe("gigatools_lumber_axes:lumber_axe_steel", "default:steelblock", {
      description     = S("Steel Lumber Axe"),
-     inventory_image = "default_tool_steelaxe.png", -- TODO change
+     inventory_image = "gigatools_lumber_axes_steel_lumber_axe.png",
      sound           = { breaks = "default_tool_breaks" },
      groups          = { axe    = 1 },
 
@@ -91,7 +91,7 @@ if is_mod_enabled("default") then
 
    register_lumber_axe("gigatools_lumber_axes:lumber_axe_mese", "default:mese", {
        description     = S("Mese Lumber Axe"),
-       inventory_image = "default_tool_meseaxe.png", -- TODO change
+       inventory_image = "gigatools_lumber_axes_mese_lumber_axe.png",
        sound           = { breaks = "default_tool_breaks" },
        groups          = { axe    = 1 },
 
@@ -108,7 +108,7 @@ if is_mod_enabled("default") then
 
    register_lumber_axe("gigatools_lumber_axes:lumber_axe_diamond", "default:diamondblock", {
        description     = S("Diamond Lumber Axe"),
-       inventory_image = "default_tool_diamondaxe.png", -- TODO change
+       inventory_image = "gigatools_lumber_axes_diamond_lumber_axe.png",
        sound           = { breaks = "default_tool_breaks" },
        groups          = { axe    = 1 },
 

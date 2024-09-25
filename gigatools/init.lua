@@ -22,7 +22,7 @@
 -- TODO switch from using global register table to item metadata.
 -- TODO add omnidrills that have multiple dig modes.
 -- TODO add scythes which till in a 3x3.
--- TODO add sickles for breaking leaves/other plants in 3x3x3.
+-- TODO add sickles for breaking leaves/other plants in 3x3x3. snappy group
 
 
 

@@ -58,7 +58,7 @@ end
 if is_mod_enabled("default") then
    register_hammer("gigatools_hammers:hammer_bronze", "default:bronzeblock", {
        description     = S("Bronze Hammer"),
-       inventory_image = "default_tool_bronzepick.png", -- TODO change
+       inventory_image = "gigatools_hammers_bronze_hammer.png",
        sound           = { breaks  = "default_tool_breaks" },
        groups          = { pickaxe = 1 },
 
@@ -75,7 +75,7 @@ if is_mod_enabled("default") then
 
    register_hammer("gigatools_hammers:hammer_steel", "default:steelblock", {
      description     = S("Steel Hammer"),
-     inventory_image = "default_tool_steelpick.png", -- TODO change
+     inventory_image = "gigatools_hammers_steel_hammer.png",
      sound           = { breaks  = "default_tool_breaks" },
      groups          = { pickaxe = 1 },
 
@@ -92,7 +92,7 @@ if is_mod_enabled("default") then
 
    register_hammer("gigatools_hammers:hammer_mese", "default:mese", {
        description     = S("Mese Hammer"),
-       inventory_image = "default_tool_mesepick.png", -- TODO change
+       inventory_image = "gigatools_hammers_mese_hammer.png",
        sound           = { breaks  = "default_tool_breaks" },
        groups          = { pickaxe = 1 },
 
@@ -109,7 +109,7 @@ if is_mod_enabled("default") then
 
    register_hammer("gigatools_hammers:hammer_diamond", "default:diamondblock", {
        description     = S("Diamond Hammer"),
-       inventory_image = "default_tool_diamondpick.png", -- TODO change
+       inventory_image = "gigatools_hammers_diamond_hammer.png",
        sound           = { breaks  = "default_tool_breaks" },
        groups          = { pickaxe = 1 },
 

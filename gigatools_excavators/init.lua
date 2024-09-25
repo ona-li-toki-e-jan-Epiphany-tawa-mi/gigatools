@@ -21,8 +21,6 @@
 -- NOTE: when adding new excavators, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.
 
--- TODO consider making hammers do extra knockback.
-
 local S = minetest.get_translator("gigatools_excavators")
 
 
@@ -39,7 +37,11 @@ end
 -- @param definition The item's definition as expected by
 -- minetest.register_tool().
 local function register_excavator(name, crafting_material, definition)
+   definition.wield_image = definition.inventory_image .. "^[transformR90"
+   definition.sound       = { breaks  = "default_tool_breaks" }
+   definition.groups      = { shovel = 1 }
    minetest.register_tool(name, definition)
+
    gigatools.register_multinode_tool(name, 3, 3, 1)
 
    minetest.register_craft({
@@ -57,9 +59,7 @@ end
 if is_mod_enabled("default") then
    register_excavator("gigatools_excavators:excavator_bronze", "default:bronzeblock", {
        description     = S("Bronze Excavator"),
-       inventory_image = "default_tool_bronzeshovel.png", -- TODO change
-       sound           = { breaks  = "default_tool_breaks" },
-       groups          = { shovel = 1 },
+       inventory_image = "gigatools_excavators_bronze_excavator.png",
 
        tool_capabilities = {
            full_punch_interval = 1.87,
@@ -74,9 +74,7 @@ if is_mod_enabled("default") then
 
    register_excavator("gigatools_excavators:excavator_steel", "default:steelblock", {
      description     = S("Steel Excavator"),
-     inventory_image = "default_tool_steelshovel.png", -- TODO change
-     sound           = { breaks  = "default_tool_breaks" },
-     groups          = { shovel = 1 },
+     inventory_image = "gigatools_excavators_steel_excavator.png",
 
      tool_capabilities = {
         full_punch_interval = 1.87,
@@ -91,10 +89,7 @@ if is_mod_enabled("default") then
 
    register_excavator("gigatools_excavators:excavator_mese", "default:mese", {
        description     = S("Mese Excavator"),
-       inventory_image = "default_tool_meseshovel.png", -- TODO change
-       sound           = { breaks  = "default_tool_breaks" },
-       groups          = { shovel = 1 },
-
+       inventory_image = "gigatools_excavators_mese_excavator.png",
        tool_capabilities = {
            full_punch_interval = 1.7,
            max_drop_level      = 3,
@@ -108,9 +103,7 @@ if is_mod_enabled("default") then
 
    register_excavator("gigatools_excavators:excavator_diamond", "default:diamondblock", {
        description     = S("Diamond Excavator"),
-       inventory_image = "default_tool_diamondshovel.png", -- TODO change
-       sound           = { breaks  = "default_tool_breaks" },
-       groups          = { shovel = 1 },
+       inventory_image = "gigatools_excavators_diamond_excavator.png",
 
        tool_capabilities = {
            full_punch_interval = 1.7,

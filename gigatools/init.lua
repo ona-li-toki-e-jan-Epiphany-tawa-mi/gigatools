@@ -68,14 +68,12 @@ end
 
 --- Returns a set of axes representing the cuboid digging area the player has.
 -- See @{apply_cuboid} for what this is used for.
--- @param pointed_thing The digging location as a pointed_thing.
+-- @param pointed_thing The digging location as a pointed_thing of type node.
 -- @return The field name for the width axis.
 -- @return The field name for the height axis.
 -- @return The field name for the depth axis.
 -- @return The sign (+/-) of the depth axis.
 local function get_digging_cuboid_axes(player, pointed_thing)
-   assert("node" == pointed_thing.type, "expected a pointed_thing of type node, got '" .. pointed_thing.type .. "'")
-
    local above = pointed_thing.above
    local under = pointed_thing.under
 

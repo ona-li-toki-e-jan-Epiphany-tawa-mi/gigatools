@@ -33,38 +33,17 @@ gigatools = {}
 -- Do not edit directly, use @{gigatools.register_multinode_tool} instead.
 gigatools.registered_multinode_tools = {}
 
---- Validates a dimension size for @{gigatools.registered_multinode_tools}.
+--- Asserts the validity of a dimension size for
+--- @{gigatools.registered_multinode_tools}.
 -- @param size The size value.
 -- @param can_be_even Whether the dimension can be even.
 -- @param name The name of the size (i.e. "width") to show in error logs.
--- @param __func__ The name of the function to show in error logs.
--- @return Whether the size is valid.
-local function is_dimension_size_valid(size, can_be_even, name, __func__)
-   if "number" ~= type(size) then
-      _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. dump(size)
-                              .. "'. Expected number, got '" .. type(size) .. "'")
-      return false
-   end
-
-   if 1 > size then
-      _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. size
-                              .. "'. Expected number >= 1")
-      return false
-   end
-
-   if size ~= math.floor(size) then
-      _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. size
-                              .. "'. Expected integer, got float")
-      return false
-   end
-
-   if not can_be_even and 0 == size % 2 then
-      _gigatools.log("error", __func__ .. ": got invalid " .. name .. " '" .. size
-                              .. "'. Expected odd number")
-      return false
-   end
-
-   return true
+local function assert_valid_dimension_size(size, can_be_even, name)
+   assert("number" == type(size), "expected number for " .. name .. " parameter, got '" .. type(size) .. "'")
+   assert(1 <= size, "expected number >= 1 for " .. name .. " parameter, got '" .. size .. "'")
+   assert(size == math.floor(size), "expected integer for " .. name .. " parameter, got float (" .. size .. ")")
+   assert(can_be_even or 0 ~= size % 2, "expected odd number for " .. name .. "parameter, got even (" .. size
+          .. ")")
 end
 
 --- Registers a toolitem as a multinode dig tool.
@@ -72,19 +51,13 @@ end
 -- @param width The width of the cuboid to dig. Must be an odd integer >= 1.
 -- @param height The height of the cuboid to dig. Must be an odd integer >= 1.
 -- @param depth The depth of the cuboid to dig. Must be an integer != 0.
--- @return Whether the item was successfully registered.
 function gigatools.register_multinode_tool(name, width, height, depth)
    local __func__ = "gigatools.register_2d_tool"
 
-   if "string" ~= type(name) then
-      _gigatools.log("error", __func__ .. ": got invalid name '" .. dump(name)
-                              .. "'. Expected string, got '" .. type(name) .. "'")
-      return false
-   end
-
-   if not is_dimension_size_valid(width,  false, "width",  __func__) then return false end
-   if not is_dimension_size_valid(height, false, "height", __func__) then return false end
-   if not is_dimension_size_valid(depth,  true,  "depth",  __func__) then return false end
+   assert("string" == type(name), "expected string for name parameter, got '" .. type(name) .. "'")
+   assert_valid_dimension_size(width,  false, "width")
+   assert_valid_dimension_size(height, false, "height")
+   assert_valid_dimension_size(depth,  true,  "depth")
 
    _gigatools.log("verbose", __func__  .. ": registered multinode toolitem '" .. name .. "'")
    gigatools.registered_multinode_tools[_gigatools.resolve_alias(name)] = {
@@ -92,5 +65,4 @@ function gigatools.register_multinode_tool(name, width, height, depth)
       height = height,
       depth  = depth
    }
-   return true
 end

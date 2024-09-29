@@ -58,74 +58,47 @@ _gigatools.load_module("api.lua")
 
 local half_pi    = math.pi / 2
 local quarter_pi = math.pi / 4
--- How many radians the player's pitch can be from +/- pi/2 (looking straight up
--- or down) to count as facing vertically.
-local vertical_mining_epsilon_rad = 0.2
 
---- Returns whether the player is facing the +X axis "enough."
-local function is_player_facing_positive_x(player)
+--- Returns whether the player is facing the +/- X axis "enough."
+local function is_player_facing_x_axis(player)
    local yaw_rad = player:get_look_horizontal()
-   return yaw_rad > 3*half_pi - quarter_pi and yaw_rad < 2*math.pi - quarter_pi
+   return (yaw_rad > 3*half_pi - quarter_pi and yaw_rad < 2*math.pi - quarter_pi)
+          or (yaw_rad > quarter_pi and yaw_rad < math.pi - quarter_pi)
 end
 
---- Returns whether the player is facing the -X axis "enough."
-local function is_player_facing_negative_x(player)
-   local yaw_rad = player:get_look_horizontal()
-   return yaw_rad > quarter_pi and yaw_rad < math.pi - quarter_pi
-end
-
---- Returns whether the player is facing the +Z axis "enough."
-local function is_player_facing_positive_z(player)
-   local yaw_rad = player:get_look_horizontal()
-   return yaw_rad > 2*math.pi - quarter_pi
-end
-
---- Returns whether the player is facing the -Z axis "enough."
-local function is_player_facing_negative_z(player)
-   local yaw_rad = player:get_look_horizontal()
-   return yaw_rad > math.pi - quarter_pi and yaw_rad < 3*half_pi - quarter_pi
-end
-
---- Returns whether the player is facing the +Y axis "enough."
-local function is_player_facing_positive_y(player)
-   return player:get_look_vertical() < -half_pi + vertical_mining_epsilon_rad
-end
-
---- Returns whether the player is facing the -Y axis "enough."
-local function is_player_facing_negative_y(player)
-   return player:get_look_vertical() > half_pi - vertical_mining_epsilon_rad
-end
-
---- Returns a set of axes representing the player's facing based on their
---- direction.
+--- Returns a set of axes representing the cuboid digging area the player has.
 -- See @{apply_cuboid} for what this is used for.
+-- @param pointed_thing The digging location as a pointed_thing.
 -- @return The field name for the width axis.
 -- @return The field name for the height axis.
 -- @return The field name for the depth axis.
 -- @return The sign (+/-) of the depth axis.
-local function get_player_facing_cuboid_axes(player)
-   if is_player_facing_positive_y(player) then
-      if is_player_facing_negative_x(player) or is_player_facing_positive_x(player) then
+local function get_digging_cuboid_axes(player, pointed_thing)
+   assert("node" == pointed_thing.type, "expected a pointed_thing of type node, got '" .. pointed_thing.type .. "'")
+
+   local above = pointed_thing.above
+   local under = pointed_thing.under
+
+   if above.x < under.x then -- -X node face.
+      return "z", "y", "x", 1
+   elseif above.x > under.x then -- +X node face.
+      return "z", "y", "x", -1
+   elseif above.z < under.z then -- -Z node face.
+      return "x", "y", "z", 1
+   elseif above.z > under.z then -- +Z node face.
+      return "x", "y", "z", -1
+   elseif above.y < under.y then -- -Y node face.
+      if is_player_facing_x_axis(player) then
          return "z", "x", "y", 1
       else
          return "x", "z", "y", 1
       end
-   elseif is_player_facing_negative_y(player) then
-      if is_player_facing_negative_x(player) or is_player_facing_positive_x(player) then
+   else -- +Y node face.
+      if is_player_facing_x_axis(player) then
          return "z", "x", "y", -1
       else
          return "x", "z", "y", -1
       end
-   end
-
-   if is_player_facing_positive_x(player) then
-      return "z", "y", "x", 1
-   elseif is_player_facing_negative_x(player) then
-      return "z", "y", "x", -1
-   elseif is_player_facing_positive_z(player) then
-      return "x", "y", "z", 1
-   else
-      return "x", "y", "z", -1
    end
 
    assert(false, "unreachable")
@@ -208,6 +181,12 @@ end
 -- tool's multinode digging. This is to prevent recursively mining nodes.
 local is_using_multinode_tool = {}
 
+-- Map between player names and the pointed_thing from
+-- try_adjust_multinode_tool_dig_time(). This is needed because
+-- minetest.register_on_dignode() does not return a pointed_thing, which is
+-- needed to determine the mining cuboid axes.
+local player_pointed_things = {}
+
 --- Handles checking for the use of a multinode tool and digging the extra nodes.
 local function try_dig_with_multinode_tool(position, old_node, digger)
    if nil == digger or not digger:is_player() then return end
@@ -221,7 +200,10 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
    if not is_meant_to_break(wielded_item, old_node) then return end
 
    is_using_multinode_tool[player_name] = true
-   local width_axis, height_axis, depth_axis, depth_axis_sign = get_player_facing_cuboid_axes(digger)
+
+   local pointed_thing = player_pointed_things[player_name]
+   assert(nil ~= pointed_thing, "expected valid pointed_thing, got nil")
+   local width_axis, height_axis, depth_axis, depth_axis_sign = get_digging_cuboid_axes(digger, pointed_thing)
    apply_cuboid(
       position,
       width_axis,  dig_dimensions.width,
@@ -235,6 +217,7 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
          end
       end
    )
+
    is_using_multinode_tool[player_name] = nil
 end
 minetest.register_on_dignode(try_dig_with_multinode_tool)
@@ -253,6 +236,9 @@ local function try_adjust_multinode_tool_dig_time(position, node, puncher, point
    if nil == dig_dimensions                     then return end
    if not is_meant_to_break(wielded_item, node) then return end
 
+   -- Save pointed_thing for try_dig_with_multinode_tool().
+   player_pointed_things[puncher:get_player_name()] = pointed_thing
+
    -- Wipe previous dig time adjustments.
    wielded_item:get_meta():set_tool_capabilities(nil)
    local tool_capabilities = wielded_item:get_tool_capabilities()
@@ -260,7 +246,7 @@ local function try_adjust_multinode_tool_dig_time(position, node, puncher, point
    -- Calculates how long it would take to mine all the applicable blocks.
    local dig_time    = 0.0
    local block_count = 0
-   local width_axis, height_axis, depth_axis, depth_axis_sign = get_player_facing_cuboid_axes(puncher)
+   local width_axis, height_axis, depth_axis, depth_axis_sign = get_digging_cuboid_axes(puncher, pointed_thing)
    apply_cuboid(
       position,
       width_axis,  dig_dimensions.width,

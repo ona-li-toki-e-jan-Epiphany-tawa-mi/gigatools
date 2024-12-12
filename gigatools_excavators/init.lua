@@ -41,9 +41,8 @@ local function register_excavator(name, crafting_material, definition)
    definition.wield_image = definition.inventory_image .. "^[transformR90"
    definition.sound       = { breaks  = "default_tool_breaks" }
    definition.groups      = { shovel = 1 }
+   definition._gigatools  = gigatools.multinode_definition(3, 3, 1)
    core.register_tool(name, definition)
-
-   gigatools.register_multinode_tool(name, 3, 3, 1)
 
    core.register_craft({
         output = name,

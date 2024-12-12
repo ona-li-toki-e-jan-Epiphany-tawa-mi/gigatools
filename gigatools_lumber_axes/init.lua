@@ -38,11 +38,10 @@ end
 -- for the head of the lumber axe.
 -- @param definition The item's definition as expected by core.register_tool().
 local function register_lumber_axe(name, crafting_material, definition)
-   definition.sound  = { breaks = "default_tool_breaks" }
-   definition.groups = { axe    = 1 }
+   definition.sound      = { breaks = "default_tool_breaks" }
+   definition.groups     = { axe    = 1 }
+   definition._gigatools = gigatools.multinode_definition(3, 3, 3)
    core.register_tool(name, definition)
-
-   gigatools.register_multinode_tool(name, 3, 3, 3)
 
    core.register_craft({
         output = name,

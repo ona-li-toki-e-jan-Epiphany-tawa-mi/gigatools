@@ -155,8 +155,7 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
    if is_using_multinode_tool[player_name] then return end
 
    local wielded_item   = digger:get_wielded_item()
-   local dig_dimensions = gigatools.registered_multinode_tools[
-      _gigatools.resolve_alias(wielded_item:get_name())]
+   local dig_dimensions = gigatools.get_dimensions(wielded_item)
    if nil == dig_dimensions                         then return end
    if not is_meant_to_break(wielded_item, old_node) then return end
 
@@ -194,8 +193,7 @@ local function try_adjust_multinode_tool_dig_time(position, node, puncher, point
    if nil == puncher or not puncher:is_player() then return end
 
    local wielded_item   = puncher:get_wielded_item()
-   local dig_dimensions = gigatools.registered_multinode_tools[
-      _gigatools.resolve_alias(wielded_item:get_name())]
+   local dig_dimensions = gigatools.get_dimensions(wielded_item)
    if nil == dig_dimensions                     then return end
    if not is_meant_to_break(wielded_item, node) then return end
 

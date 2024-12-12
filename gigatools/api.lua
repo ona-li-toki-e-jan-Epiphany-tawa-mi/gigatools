@@ -22,18 +22,6 @@ local _gigatools = ...
 
 
 
--- Global namespace.
-gigatools = {}
-
---- A table of multinode dig tools.
--- Keys are full item names (no aliases,) values are a table with the following
--- elements:
---   width: the width of the cuboid to dig. Must be an odd integer >= 1.
---   height: the height of the cuboid to dig. Must be an odd integer >= 1.
---   depth: the depth of the cuboid to dig. Must be an integer != 0.
--- Do not edit directly, use @{gigatools.register_multinode_tool} instead.
-gigatools.registered_multinode_tools = {}
-
 --- Asserts the validity of a dimension size for
 --- @{gigatools.registered_multinode_tools}.
 -- @param size The size value.
@@ -42,8 +30,7 @@ gigatools.registered_multinode_tools = {}
 local function assert_valid_dimension_size(size, can_be_even, name)
    assert(
       "number" == type(size),
-      "expected number for " .. name .. " parameter, got '" .. type(size)
-      .. "'"
+      "expected number for " .. name .. " parameter, got '" .. type(size) .. "'"
    )
    assert(
       1 <= size,
@@ -61,29 +48,47 @@ local function assert_valid_dimension_size(size, can_be_even, name)
    )
 end
 
---- Registers a toolitem as a multinode dig tool.
--- @param name The item's name.
+
+
+-- README:
+--
+-- To make an item a multinode tool, you need to set _gigatools in it's
+-- definition when registering it.
+--
+-- Do not create this value yourself. Instead, use
+-- @{gigatools.multinode_definition} to construct the value.
+--
+-- Arbitrary example:
+-- core.register_tool("example:some_tool", {
+--      description = S("Some Tool"),
+--      -- Dig in a 3x3x3 cube.
+--      _gigatools = gigatools.multinode_definition(3, 3, 3)
+-- })
+
+-- Global namespace.
+gigatools = {}
+
+--- Creates a table that you can assign to _gigatools in an item definition.
 -- @param width The width of the cuboid to dig. Must be an odd integer >= 1.
 -- @param height The height of the cuboid to dig. Must be an odd integer >= 1.
 -- @param depth The depth of the cuboid to dig. Must be an integer != 0.
-function gigatools.register_multinode_tool(name, width, height, depth)
-   local __func__ = "gigatools.register_2d_tool"
+function gigatools.multinode_definition(width, height, depth)
+   local __func__ = "gigatools.register_multinode_tool"
 
-   assert(
-      "string" == type(name),
-      "expected string for name parameter, got '" .. type(name) .. "'"
-   )
    assert_valid_dimension_size(width,  false, "width")
    assert_valid_dimension_size(height, false, "height")
    assert_valid_dimension_size(depth,  true,  "depth")
 
-   _gigatools.log(
-      "verbose",
-      __func__  .. ": registered multinode toolitem '" .. name .. "'"
-   )
-   gigatools.registered_multinode_tools[_gigatools.resolve_alias(name)] = {
+   return {
       width  = width,
       height = height,
       depth  = depth
    }
+end
+
+--- Returns the multinode node dig dimensions of the given item.
+-- @return The dimensions, or nil, if they were not present in the item's
+-- definition.
+function gigatools.get_dimensions(item)
+   return item:get_definition()._gigatools
 end

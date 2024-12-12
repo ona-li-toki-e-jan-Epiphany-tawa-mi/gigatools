@@ -98,8 +98,6 @@ local function get_digging_cuboid_axes(player, pointed_thing)
          return "x", "z", "y", -1
       end
    end
-
-   assert(false, "unreachable")
 end
 
 --- Returns the sign of a number: 1 for positive, -1 for negative, and 0 for 0.
@@ -216,6 +214,7 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
       width_axis,  dig_dimensions.width,
       height_axis, dig_dimensions.height,
       depth_axis,  dig_dimensions.depth * depth_axis_sign,
+      -- luacheck: push ignore 432 -- Variable shadowing.
       function(position, node, width_offset, height_offset, depth_offset)
          if (0 ~= width_offset or 0 ~= height_offset or 0 ~= depth_offset)
             and is_meant_to_break(wielded_item, node)
@@ -223,6 +222,7 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
             core.node_dig(position, node, digger)
          end
       end
+      -- luacheck: pop
    )
 
    is_using_multinode_tool[player_name] = nil
@@ -259,7 +259,8 @@ local function try_adjust_multinode_tool_dig_time(position, node, puncher, point
       width_axis,  dig_dimensions.width,
       height_axis, dig_dimensions.height,
       depth_axis,  dig_dimensions.depth * depth_axis_sign,
-      function(position, node, width_offset, height_offset)
+      -- luacheck: push ignore 432 -- Variable shadowing.
+      function(_, node, _, _)
          if is_meant_to_break(wielded_item, node) then
             local node_definition = core.registered_nodes[_gigatools.resolve_alias(node.name)]
             dig_time = dig_time + core.get_dig_params(
@@ -269,6 +270,7 @@ local function try_adjust_multinode_tool_dig_time(position, node, puncher, point
             block_count = 1 + block_count
          end
       end
+      -- luacheck: pop
    )
 
    -- Adjusts tool dig speed.

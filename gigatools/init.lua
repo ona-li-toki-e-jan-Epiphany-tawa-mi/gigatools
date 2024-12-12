@@ -18,7 +18,6 @@
 -- Gigatools core mod.
 -- Handles inner workings of multi-node digging tools.
 
--- TODO add multinode to item metadata as well for dynamic sizing.
 -- TODO add omnidrills that have multiple dig modes.
 -- TODO add scythes which till in a 3x3.
 -- TODO add sickles for breaking leaves/other plants in 3x3x3. snappy group

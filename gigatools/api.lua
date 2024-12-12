@@ -18,7 +18,7 @@
 -- Gigatools API module.
 
 -- Imports private namespace.
-local _gigatools = ...
+--local _gigatools = ...
 
 
 
@@ -48,6 +48,11 @@ local function assert_valid_dimension_size(size, can_be_even, name)
    )
 end
 
+-- Keys for storing multinode dimensions in item metadata.
+local width_meta_key  = "gigatools_width"
+local height_meta_key = "gigatools_height"
+local depth_meta_key  = "gigatools_depth"
+
 
 
 -- README:
@@ -64,6 +69,9 @@ end
 --      -- Dig in a 3x3x3 cube.
 --      _gigatools = gigatools.multinode_definition(3, 3, 3)
 -- })
+--
+-- You can also set an individual itemstack to have custom multinode dimensions,
+-- see @{gigatools.make_multinode}.
 
 -- Global namespace.
 gigatools = {}
@@ -73,8 +81,6 @@ gigatools = {}
 -- @param height The height of the cuboid to dig. Must be an odd integer >= 1.
 -- @param depth The depth of the cuboid to dig. Must be an integer != 0.
 function gigatools.multinode_definition(width, height, depth)
-   local __func__ = "gigatools.register_multinode_tool"
-
    assert_valid_dimension_size(width,  false, "width")
    assert_valid_dimension_size(height, false, "height")
    assert_valid_dimension_size(depth,  true,  "depth")
@@ -86,9 +92,37 @@ function gigatools.multinode_definition(width, height, depth)
    }
 end
 
+--- Sets an individual item to have custom multinode dimensions. Overrides the
+--- dimensions in the item's definition.
+-- @param width The width of the cuboid to dig. Must be an odd integer >= 1.
+-- @param height The height of the cuboid to dig. Must be an odd integer >= 1.
+-- @param depth The depth of the cuboid to dig. Must be an integer != 0.
+function gigatools.make_multinode(item, width, height, depth)
+   assert_valid_dimension_size(width,  false, "width")
+   assert_valid_dimension_size(height, false, "height")
+   assert_valid_dimension_size(depth,  true,  "depth")
+
+   local meta = item:get_meta()
+   meta:set_int(width_meta_key, width)
+   meta:set_int(height_meta_key, height)
+   meta:set_int(depth_meta_key, depth)
+end
+
 --- Returns the multinode node dig dimensions of the given item.
--- @return The dimensions, or nil, if they were not present in the item's
--- definition.
+-- @return The dimensions, or nil, if they are not present.
 function gigatools.get_dimensions(item)
+   local meta = item:get_meta()
+   local width = meta:get_int(width_meta_key)
+   local height = meta:get_int(height_meta_key)
+   local depth = meta:get_int(depth_meta_key)
+
+   if 0 ~= width and 0 ~= height and 0 ~= depth then
+      return {
+         width  = width,
+         height = height,
+         depth  = depth
+      }
+   end
+
    return item:get_definition()._gigatools
 end

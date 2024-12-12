@@ -24,29 +24,28 @@
 -- TODO consider making hammers do extra knockback.
 -- TODO add Mineclonia/VoxeLibre support.
 
-local S = minetest.get_translator("gigatools_hammers")
+local S = core.get_translator("gigatools_hammers")
 
 
 
 -- Returns whether the mod with the given name is enabled.
 local function is_mod_enabled(name)
-   return nil ~= minetest.get_modpath(name)
+   return nil ~= core.get_modpath(name)
 end
 
 --- Registers a new hammer toolitem.
 -- @param name Item name.
 -- @param crafting_material The name of the item to use as the crafting material
 -- for the head of the hammer.
--- @param definition The item's definition as expected by
--- minetest.register_tool().
+-- @param definition The item's definition as expected by core.register_tool().
 local function register_hammer(name, crafting_material, definition)
    definition.sound  = { breaks  = "default_tool_breaks" }
-   definition.groups = { pickaxe = 1 },
-   minetest.register_tool(name, definition)
+   definition.groups = { pickaxe = 1 }
+   core.register_tool(name, definition)
 
    gigatools.register_multinode_tool(name, 3, 3, 1)
 
-   minetest.register_craft({
+   core.register_craft({
         output = name,
         recipe = {
             { crafting_material, crafting_material, crafting_material },

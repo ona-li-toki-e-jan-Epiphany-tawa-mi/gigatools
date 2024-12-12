@@ -21,32 +21,31 @@
 -- NOTE: when adding new excavators, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.
 
-local S = minetest.get_translator("gigatools_excavators")
 -- TODO add Mineclonia/VoxeLibre support.
 
+local S = core.get_translator("gigatools_excavators")
 
 
 
 -- Returns whether the mod with the given name is enabled.
 local function is_mod_enabled(name)
-   return nil ~= minetest.get_modpath(name)
+   return nil ~= core.get_modpath(name)
 end
 
 --- Registers a new excavator toolitem.
 -- @param name Item name.
 -- @param crafting_material The name of the item to use as the crafting material
 -- for the head of the excavator.
--- @param definition The item's definition as expected by
--- minetest.register_tool().
+-- @param definition The item's definition as expected by core.register_tool().
 local function register_excavator(name, crafting_material, definition)
    definition.wield_image = definition.inventory_image .. "^[transformR90"
    definition.sound       = { breaks  = "default_tool_breaks" }
    definition.groups      = { shovel = 1 }
-   minetest.register_tool(name, definition)
+   core.register_tool(name, definition)
 
    gigatools.register_multinode_tool(name, 3, 3, 1)
 
-   minetest.register_craft({
+   core.register_craft({
         output = name,
         recipe = {
             { "", crafting_material, "" },

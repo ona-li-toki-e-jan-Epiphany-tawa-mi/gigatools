@@ -29,25 +29,25 @@
 -- Private namespace for internal functions.
 local _gigatools = {}
 
---- Wrapper for minetest.log().
+--- Wrapper for core.log().
 -- Adds a prefix to the text inidicating that the log message comes from
 -- Gigatools.
 -- @param level One of "none", "error", "warning", "action", "info", or "verbose".
 -- @param text The log message.
 function _gigatools.log(level, text)
-   minetest.log(level, "[gigatools] " .. text)
+   core.log(level, "[gigatools] " .. text)
 end
 
 --- Resolves item name aliases.
 function _gigatools.resolve_alias(name)
-   return minetest.registered_aliases[name] or name
+   return core.registered_aliases[name] or name
 end
 
 --- Loads and executes a Gigatools Lua module.
 -- @param path The file path of the module relative to the Gigatools directory.
 -- @return The return value of the Lua module.
 function _gigatools.load_module(path)
-   return loadfile(minetest.get_modpath("gigatools") .. "/" .. path)(_gigatools)
+   return loadfile(core.get_modpath("gigatools") .. "/" .. path)(_gigatools)
 end
 
 
@@ -118,7 +118,8 @@ end
 -- @param width_field The field name that represents the width axis (i.e. "x".)
 -- @param width_size The size of the cuboid along the width axis. Should be an
 -- odd integer >= 1.
--- @param height_field The field name that represents the height axis (i.e. "y".)
+-- @param height_field The field name that represents the height axis (i.e.
+-- "y".)
 -- @param height_size The size of the cuboid along the height axis. Should be an
 -- odd integer >= 1.
 -- @param depth_field The field name that represents the depth axis (i.e. "z".")
@@ -151,7 +152,7 @@ local function apply_cuboid( position
          for height_offset=-height_half_size,height_half_size do
             offset_position[height_field] = position[height_field] + height_offset
 
-            local node = minetest.get_node(offset_position)
+            local node = core.get_node(offset_position)
             if "ignore" ~= node.name then
                func(
                   offset_position,
@@ -171,7 +172,7 @@ local function is_meant_to_break(toolitem, node)
    local groupcaps = toolitem:get_tool_capabilities().groupcaps
 
    for group, _ in pairs(groupcaps) do
-      if 0 ~= minetest.get_item_group(node.name, group) then
+      if 0 ~= core.get_item_group(node.name, group) then
          return true
       end
    end
@@ -219,14 +220,14 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
          if (0 ~= width_offset or 0 ~= height_offset or 0 ~= depth_offset)
             and is_meant_to_break(wielded_item, node)
          then
-            minetest.node_dig(position, node, digger)
+            core.node_dig(position, node, digger)
          end
       end
    )
 
    is_using_multinode_tool[player_name] = nil
 end
-minetest.register_on_dignode(try_dig_with_multinode_tool)
+core.register_on_dignode(try_dig_with_multinode_tool)
 
 
 
@@ -260,8 +261,8 @@ local function try_adjust_multinode_tool_dig_time(position, node, puncher, point
       depth_axis,  dig_dimensions.depth * depth_axis_sign,
       function(position, node, width_offset, height_offset)
          if is_meant_to_break(wielded_item, node) then
-            local node_definition = minetest.registered_nodes[_gigatools.resolve_alias(node.name)]
-            dig_time = dig_time + minetest.get_dig_params(
+            local node_definition = core.registered_nodes[_gigatools.resolve_alias(node.name)]
+            dig_time = dig_time + core.get_dig_params(
                node_definition.groups,
                tool_capabilities
             ).time
@@ -286,4 +287,4 @@ local function try_adjust_multinode_tool_dig_time(position, node, puncher, point
    -- Write out new dig times.
    puncher:set_wielded_item(wielded_item)
 end
-minetest.register_on_punchnode(try_adjust_multinode_tool_dig_time)
+core.register_on_punchnode(try_adjust_multinode_tool_dig_time)

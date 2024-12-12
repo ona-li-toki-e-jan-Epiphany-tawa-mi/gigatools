@@ -26,7 +26,8 @@ local _gigatools = ...
 gigatools = {}
 
 --- A table of multinode dig tools.
--- Keys are full item names (no aliases,) values are a table with the following elements:
+-- Keys are full item names (no aliases,) values are a table with the following
+-- elements:
 --   width: the width of the cuboid to dig. Must be an odd integer >= 1.
 --   height: the height of the cuboid to dig. Must be an odd integer >= 1.
 --   depth: the depth of the cuboid to dig. Must be an integer != 0.
@@ -39,11 +40,25 @@ gigatools.registered_multinode_tools = {}
 -- @param can_be_even Whether the dimension can be even.
 -- @param name The name of the size (i.e. "width") to show in error logs.
 local function assert_valid_dimension_size(size, can_be_even, name)
-   assert("number" == type(size), "expected number for " .. name .. " parameter, got '" .. type(size) .. "'")
-   assert(1 <= size, "expected number >= 1 for " .. name .. " parameter, got '" .. size .. "'")
-   assert(size == math.floor(size), "expected integer for " .. name .. " parameter, got float (" .. size .. ")")
-   assert(can_be_even or 0 ~= size % 2, "expected odd number for " .. name .. "parameter, got even (" .. size
-          .. ")")
+   assert(
+      "number" == type(size),
+      "expected number for " .. name .. " parameter, got '" .. type(size)
+      .. "'"
+   )
+   assert(
+      1 <= size,
+      "expected number >= 1 for " .. name .. " parameter, got '" .. size .. "'"
+   )
+   assert(
+      size == math.floor(size),
+      "expected integer for " .. name .. " parameter, got float (" .. size
+      .. ")"
+   )
+   assert(
+      can_be_even or 0 ~= size % 2,
+      "expected odd number for " .. name .. "parameter, got even (" .. size
+      .. ")"
+   )
 end
 
 --- Registers a toolitem as a multinode dig tool.
@@ -54,12 +69,18 @@ end
 function gigatools.register_multinode_tool(name, width, height, depth)
    local __func__ = "gigatools.register_2d_tool"
 
-   assert("string" == type(name), "expected string for name parameter, got '" .. type(name) .. "'")
+   assert(
+      "string" == type(name),
+      "expected string for name parameter, got '" .. type(name) .. "'"
+   )
    assert_valid_dimension_size(width,  false, "width")
    assert_valid_dimension_size(height, false, "height")
    assert_valid_dimension_size(depth,  true,  "depth")
 
-   _gigatools.log("verbose", __func__  .. ": registered multinode toolitem '" .. name .. "'")
+   _gigatools.log(
+      "verbose",
+      __func__  .. ": registered multinode toolitem '" .. name .. "'"
+   )
    gigatools.registered_multinode_tools[_gigatools.resolve_alias(name)] = {
       width  = width,
       height = height,

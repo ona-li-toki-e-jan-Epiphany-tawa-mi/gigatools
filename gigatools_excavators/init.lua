@@ -22,6 +22,8 @@
 -- uses by 9, and add 1 to damage groups.
 
 local S = minetest.get_translator("gigatools_excavators")
+-- TODO add Mineclonia/VoxeLibre support.
+
 
 
 

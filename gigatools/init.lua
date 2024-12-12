@@ -130,10 +130,13 @@ end
 --   2. node The node.
 --   3. width_offset The node's offset from the center along the width axis.
 --   4. height_offset The node's offset from the center along the height axis.
---   5. depth_offset The node's offset from the starting position along the depth
---   axis.
-local function apply_cuboid( position, width_field, width_size, height_field, height_size, depth_field
-                           , depth_distance, func
+--   5. depth_offset The node's offset from the starting position along the
+--   depth axis.
+local function apply_cuboid( position
+                           , width_field, width_size
+                           , height_field, height_size
+                           , depth_field, depth_distance
+                           , func
                            )
    local offset_position = table.copy(position)
 
@@ -150,7 +153,11 @@ local function apply_cuboid( position, width_field, width_size, height_field, he
 
             local node = minetest.get_node(offset_position)
             if "ignore" ~= node.name then
-               func(offset_position, node, width_offset, height_offset, depth_offset)
+               func(
+                  offset_position,
+                  node,
+                  width_offset, height_offset, depth_offset
+               )
             end
          end
       end
@@ -185,7 +192,8 @@ local is_using_multinode_tool = {}
 -- needed to determine the mining cuboid axes.
 local player_pointed_things = {}
 
---- Handles checking for the use of a multinode tool and digging the extra nodes.
+--- Handles checking for the use of a multinode tool and digging the extra
+--- nodes.
 local function try_dig_with_multinode_tool(position, old_node, digger)
    if nil == digger or not digger:is_player() then return end
    local player_name = digger:get_player_name()

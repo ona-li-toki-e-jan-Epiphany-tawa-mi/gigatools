@@ -5,10 +5,11 @@
 -- Removes warning for use of non-standard global variables.
 allow_defined_top = true
 
--- Removes warning for use of global namespaces.
+-- Removes warning for use of Luanti namespace.
 globals = { "core" }
 
+-- Removes warning for use of non-standard fields in standard global namspaces.
 read_globals = {
-    -- Removes warning for using table methods.
-    table = { fields = { "copy" } }
+   table = { fields = { "copy" } },
+   math  = { fields = { "sign" } }
 }

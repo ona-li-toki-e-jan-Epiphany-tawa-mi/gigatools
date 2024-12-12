@@ -100,16 +100,6 @@ local function get_digging_cuboid_axes(player, pointed_thing)
    end
 end
 
---- Returns the sign of a number: 1 for positive, -1 for negative, and 0 for 0.
-local function signum(number)
-   if number > 0 then
-      return 1
-   elseif number < 0 then
-      return -1
-   end
-   return 0
-end
-
 --- Calls a function on a directional cuboid of nodes.
 -- @param position The cuboid's center for width/height and the starting
 -- position for the depth.
@@ -141,7 +131,7 @@ local function apply_cuboid( position
 
    local width_half_size  = math.floor(width_size  / 2)
    local height_half_size = math.floor(height_size / 2)
-   local depth_direction  = signum(depth_distance)
+   local depth_direction  = math.sign(depth_distance)
 
    for depth_offset=0,depth_distance-depth_direction,depth_direction do
       offset_position[depth_field] = position[depth_field] + depth_offset

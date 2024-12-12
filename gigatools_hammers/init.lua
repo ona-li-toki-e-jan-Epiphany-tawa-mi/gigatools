@@ -21,7 +21,6 @@
 -- NOTE: when adding new hammers, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.
 
--- TODO consider making hammers do extra knockback.
 -- TODO add Mineclonia/VoxeLibre support.
 
 local S = core.get_translator("gigatools_hammers")

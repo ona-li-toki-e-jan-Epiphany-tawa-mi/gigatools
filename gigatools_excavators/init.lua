@@ -21,8 +21,6 @@
 -- NOTE: when adding new excavators, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.
 
--- TODO add Mineclonia/VoxeLibre support.
-
 local S = core.get_translator("gigatools_excavators")
 
 
@@ -32,32 +30,30 @@ local function is_mod_enabled(name)
    return nil ~= core.get_modpath(name)
 end
 
---- Registers a new excavator toolitem.
--- @param name Item name.
--- @param crafting_material The name of the item to use as the crafting material
--- for the head of the excavator.
--- @param definition The item's definition as expected by core.register_tool().
-local function register_excavator(name, crafting_material, definition)
-   definition.wield_image = definition.inventory_image .. "^[transformR90"
-   definition.sound       = { breaks  = "default_tool_breaks" }
-   definition.groups      = { shovel = 1 }
-   definition._gigatools  = gigatools.multinode_definition(3, 3, 1)
-   core.register_tool(name, definition)
-
-   core.register_craft({
-        output = name,
-        recipe = {
-            { "", crafting_material, "" },
-            { "", "group:stick",     "" },
-            { "", "group:stick",     "" }
-        }
-    })
-end
-
 
 
 if is_mod_enabled("default") then
-   register_excavator("gigatools_excavators:excavator_bronze", "default:bronzeblock", {
+   -- TODO: see if values can be pulled from original tools.
+   local function register_excavator(name, crafting_material, definition)
+      definition.wield_image = definition.inventory_image .. "^[transformR90"
+      definition.sound       = { breaks  = "default_tool_breaks" }
+      definition.groups      = { shovel = 1 }
+      definition._gigatools  = gigatools.multinode_definition(3, 3, 1)
+      core.register_tool(name, definition)
+
+      core.register_craft({
+            output = name,
+            recipe = {
+               { "", crafting_material, "" },
+               { "", "group:stick",     "" },
+               { "", "group:stick",     "" }
+            }
+      })
+   end
+
+   register_excavator( "gigatools_excavators:excavator_bronze"
+                     , "default:bronzeblock"
+                     , {
        description     = S("Bronze Excavator"),
        inventory_image = "gigatools_excavators_bronze_excavator.png",
 
@@ -71,8 +67,9 @@ if is_mod_enabled("default") then
            }
        }
    })
-
-   register_excavator("gigatools_excavators:excavator_steel", "default:steelblock", {
+   register_excavator( "gigatools_excavators:excavator_steel"
+                     , "default:steelblock"
+                     , {
      description     = S("Steel Excavator"),
      inventory_image = "gigatools_excavators_steel_excavator.png",
 
@@ -86,8 +83,9 @@ if is_mod_enabled("default") then
         }
      }
    })
-
-   register_excavator("gigatools_excavators:excavator_mese", "default:mese", {
+   register_excavator( "gigatools_excavators:excavator_mese"
+                     , "default:mese"
+                     , {
        description     = S("Mese Excavator"),
        inventory_image = "gigatools_excavators_mese_excavator.png",
        tool_capabilities = {
@@ -100,8 +98,9 @@ if is_mod_enabled("default") then
            }
        }
    })
-
-   register_excavator("gigatools_excavators:excavator_diamond", "default:diamondblock", {
+   register_excavator( "gigatools_excavators:excavator_diamond"
+                     , "default:diamondblock"
+                     , {
        description     = S("Diamond Excavator"),
        inventory_image = "gigatools_excavators_diamond_excavator.png",
 
@@ -114,5 +113,113 @@ if is_mod_enabled("default") then
                crumbly = { times = { [1] = 1.87, [2] = 0.85, [3] = 0.51 }, uses = 270, maxlevel = 3 },
            }
        }
+   })
+end
+
+
+
+-- Mineclonia, Voxelibre, etc. support.
+if is_mod_enabled("mcl_tools") then
+   -- @param name string.
+   -- @param crafting_material string|nil The material to craft the excavator,
+   -- or nil, for no recipe.
+   -- @param derivative_tool table The tool definition of the shovel that the
+   -- excavator derives from.
+   -- @param material_set table The material set that the excavator derives
+   -- from.
+   -- @param definition table.
+   local function register_excavator( name
+                                    , crafting_material
+                                    , derivative_tool
+                                    , material_set
+                                    , definition
+                                    )
+      definition.sound        = definition.sound or {}
+      definition.sound.breaks = "default_tool_breaks"
+
+      definition.groups = table.merge(
+         material_set.groups,
+         definition.groups or {}
+      )
+      definition.groups.shovel       = 1
+      definition.groups.tool         = 1
+      definition.groups.offhand_item = 1
+
+      definition.tool_capabilities = definition.tool_capabilities or {}
+      definition.tool_capabilities.full_punch_interval = 1.7 *
+         derivative_tool.tool_capabilities.full_punch_interval
+      definition.tool_capabilities.damage_groups =
+         definition.tool_capabilities.damage_groups or {}
+      definition.tool_capabilities.damage_groups.fleshy = 1 +
+         derivative_tool.tool_capabilities.damage_groups.fleshy
+      definition.tool_capabilities.max_drop_level = material_set.max_drop_level
+
+      definition._mcl_diggroups = definition._mcl_diggroups or {}
+      definition._mcl_diggroups.shovely = {
+         uses  = 9 * material_set.uses,
+         level = material_set.level,
+         speed = material_set.speed / 1.7,
+      }
+
+      definition._mcl_toollike_wield = true
+      definition._repair_material    = material_set.material
+      definition.wield_scale         = mcl_vars.tool_wield_scale
+      definition._doc_items_longdesc  = S(
+         "Excavators are tools for digging coarse blocks, such as dirt, sand "
+         .. "and gravel, in a 3x3 plane. Excavators can be used as weapons, "
+         .. "but they are very weak."
+      )
+
+      definition._gigatools = gigatools.multinode_definition(3, 3, 1)
+
+      core.register_tool(name, definition)
+
+      if nil ~= crafting_material then
+         core.register_craft({
+               output = name,
+               recipe = {
+                  { "", crafting_material, "" },
+                  { "", "mcl_core:stick",  "" },
+                  { "", "mcl_core:stick",  "" },
+               },
+         })
+      end
+   end
+
+   register_excavator( "gigatools_excavators:excavator_iron"
+                     , "mcl_core:ironblock"
+                     , core.registered_tools["mcl_tools:shovel_iron"]
+                     , mcl_tools.sets["iron"]
+                     , {
+      description     = S("Iron Excavator"),
+      inventory_image = "gigatools_excavators_steel_excavator.png",
+   })
+   register_excavator( "gigatools_excavators:excavator_gold"
+                     , "mcl_core:goldblock"
+                     , core.registered_tools["mcl_tools:shovel_gold"]
+                     , mcl_tools.sets["gold"]
+                     , {
+      description     = S("Golden Excavator"),
+      inventory_image = "gigatools_excavators_mese_excavator.png",
+   })
+   register_excavator( "gigatools_excavators:excavator_diamond"
+                     , "mcl_core:diamondblock"
+                     , core.registered_tools["mcl_tools:shovel_diamond"]
+                     , mcl_tools.sets["diamond"]
+                     , {
+      description     = S("Diamond Excavator"),
+      inventory_image = "gigatools_excavators_diamond_excavator.png",
+
+      -- Allows upgrading to netherite.
+      _mcl_upgradable   = true,
+      _mcl_upgrade_item = "gigatools_excavators:excavator_netherite",
+   })
+   register_excavator( "gigatools_excavators:excavator_netherite"
+                     , nil
+                     , core.registered_tools["mcl_tools:shovel_netherite"]
+                     , mcl_tools.sets["netherite"]
+                     , {
+      description = S("Netherite Excavator"),
+      -- TODO make netherite hammer texture.
    })
 end

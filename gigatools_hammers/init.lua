@@ -26,6 +26,7 @@ local S = core.get_translator("gigatools_hammers")
 
 
 -- Returns whether the mod with the given name is enabled.
+-- @param name string.
 local function is_mod_enabled(name)
    return nil ~= core.get_modpath(name)
 end
@@ -74,7 +75,6 @@ if is_mod_enabled("default") then
           }
        }
    })
-
    register_hammer("gigatools_hammers:hammer_steel", "default:steelblock", {
      description     = S("Steel Hammer"),
      inventory_image = "gigatools_hammers_steel_hammer.png",
@@ -93,7 +93,6 @@ if is_mod_enabled("default") then
         }
      }
    })
-
    register_hammer("gigatools_hammers:hammer_mese", "default:mese", {
        description     = S("Mese Hammer"),
        inventory_image = "gigatools_hammers_mese_hammer.png",
@@ -112,7 +111,6 @@ if is_mod_enabled("default") then
           }
        }
    })
-
    register_hammer("gigatools_hammers:hammer_diamond", "default:diamondblock", {
        description     = S("Diamond Hammer"),
        inventory_image = "gigatools_hammers_diamond_hammer.png",
@@ -134,8 +132,16 @@ if is_mod_enabled("default") then
 end
 
 
+
 -- Mineclonia, Voxelibre, etc. support.
 if is_mod_enabled("mcl_tools") then
+   -- @param name string.
+   -- @param crafting_material string|nil The material to craft the hammer, or
+   -- nil, for no recipe.
+   -- @param derivative_tool table The tool definition of the pickaxe that the
+   -- hammer derives from.
+   -- @param material_set table The material set that the hammer derives from.
+   -- @param definition table.
    local function register_hammer( name
                                  , crafting_material
                                  , derivative_tool
@@ -220,7 +226,7 @@ if is_mod_enabled("mcl_tools") then
 
       -- Allows upgrading to netherite.
       _mcl_upgradable   = true,
-      _mcl_upgrade_item = "gigatools_hammers:hammers_netherite",
+      _mcl_upgrade_item = "gigatools_hammers:hammer_netherite",
    })
    register_hammer( "gigatools_hammers:hammer_netherite"
                   , nil

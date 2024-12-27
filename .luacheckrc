@@ -6,7 +6,7 @@
 allow_defined_top = true
 
 -- Removes warning for use of global namespaces.
-globals = { "core", "mcl_tools" }
+globals = { "core", "mcl_tools", "mcl_vars" }
 
 -- Removes warning for use of non-standard fields in standard global namspaces.
 read_globals = {

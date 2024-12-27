@@ -111,10 +111,10 @@ end
 --- Returns the multinode node dig dimensions of the given item.
 -- @return The dimensions, or nil, if they are not present.
 function gigatools.get_dimensions(item)
-   local meta = item:get_meta()
-   local width = meta:get_int(width_meta_key)
+   local meta   = item:get_meta()
+   local width  = meta:get_int(width_meta_key)
    local height = meta:get_int(height_meta_key)
-   local depth = meta:get_int(depth_meta_key)
+   local depth  = meta:get_int(depth_meta_key)
 
    if 0 ~= width and 0 ~= height and 0 ~= depth then
       return {

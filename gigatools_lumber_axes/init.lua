@@ -227,7 +227,7 @@ if is_mod_enabled("mcl_tools") then
                       , core.registered_tools["mcl_tools:shovel_netherite"]
                       , mcl_tools.sets["netherite"]
                       , {
-      description = S("Netherite Lumber Axe"),
-      -- TODO make netherite hammer texture.
+      description     = S("Netherite Lumber Axe"),
+      inventory_image = "gigatools_lumber_axes_netherite_lumber_axe.png",
    })
 end

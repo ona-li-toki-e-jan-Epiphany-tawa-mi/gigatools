@@ -130,6 +130,7 @@ end
 --- part of at least one of the tool's groupcaps.)
 --- @param toolitem ItemStack
 --- @param node Node
+--- @return boolean
 local function is_meant_to_break(toolitem, node)
    local groupcaps = toolitem:get_tool_capabilities().groupcaps
 
@@ -160,7 +161,7 @@ local player_pointed_things = {}
 --- Handles checking for the use of a multinode tool and digging the extra
 --- nodes.
 --- @param position Vector
---- @param old_node ItemStack
+--- @param old_node Node
 --- @param digger ObjectRef|nil
 local function try_dig_with_multinode_tool(position, old_node, digger)
    if nil == digger or not digger:is_player() then return end

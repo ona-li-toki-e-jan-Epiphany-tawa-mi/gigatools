@@ -140,31 +140,30 @@ if is_mod_enabled("mcl_tools") then
                                     , material_set
                                     , definition
                                     )
-      definition.sound        = definition.sound or {}
-      definition.sound.breaks = "default_tool_breaks"
+      definition.sound = { breaks = "default_tool_breaks" }
 
-      definition.groups = table.merge(
-         material_set.groups,
-         definition.groups or {}
-      )
-      definition.groups.shovel       = 1
-      definition.groups.tool         = 1
-      definition.groups.offhand_item = 1
+      definition.groups = {
+         shovel       = 1,
+         tool         = 1,
+         offhand_item = 1,
+      }
 
-      definition.tool_capabilities = definition.tool_capabilities or {}
-      definition.tool_capabilities.full_punch_interval = 1.7 *
-         derivative_tool.tool_capabilities.full_punch_interval
-      definition.tool_capabilities.damage_groups =
-         definition.tool_capabilities.damage_groups or {}
-      definition.tool_capabilities.damage_groups.fleshy = 1 +
-         derivative_tool.tool_capabilities.damage_groups.fleshy
-      definition.tool_capabilities.max_drop_level = material_set.max_drop_level
+      definition.tool_capabilities = {
+         full_punch_interval = 1.7 *
+            derivative_tool.tool_capabilities.full_punch_interval,
+         damage_groups = {
+            fleshy = 1 +
+               derivative_tool.tool_capabilities.damage_groups.fleshy,
+         },
+         max_drop_level = material_set.max_drop_level,
+      }
 
-      definition._mcl_diggroups = definition._mcl_diggroups or {}
-      definition._mcl_diggroups.shovely = {
-         uses  = 9 * material_set.uses,
-         level = material_set.level,
-         speed = material_set.speed / 1.7,
+      definition._mcl_diggroups = {
+         shovely = {
+            uses  = 9 * material_set.uses,
+            level = material_set.level,
+            speed = material_set.speed / 1.7,
+         },
       }
 
       definition._mcl_toollike_wield = true

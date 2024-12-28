@@ -1,7 +1,21 @@
-## Media license
+## Media license(s)
 
-The textures in `gigatools_hammers/textures/`,
-`gigatools_lumber_axes/textures/`, and `gigatools_excavators/textures` are
+The textures
+`gigatools_hammers/textures/gigatools_hammers_netherite_hammer.png`,
+`gigatools_excavators/textures/gigatools_excavators_netherite_excavator.png`,
+and
+`gigatools_lumber_axes/textures/gigatools_lumber_axes_netherite_lumber_axe.png`
+are derivatives of textures from Mineclonia
+[https://codeberg.org/mineclonia/mineclonia](https://codeberg.org/mineclonia/mineclonia),
+which are bound under the following license:
+
+```
+Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+http://creativecommons.org/licenses/by-sa/3.0/
+```
+
+The remaining textures in `gigatools_hammers/textures/`,
+`gigatools_excavators/textures/`, and `gigatools_lumber_axes/textures/` are
 derivatives of textures from Minetest Game
 [https://github.com/minetest/minetest_game](https://github.com/minetest/minetest_game),
 which are bound under the following license:

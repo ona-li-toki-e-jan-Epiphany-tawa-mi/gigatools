@@ -18,8 +18,6 @@
 -- Gigatools core mod.
 -- Handles inner workings of multi-node digging tools.
 
-
-
 -- Private namespace for internal functions.
 local _gigatools = {}
 
@@ -46,8 +44,6 @@ end
 function _gigatools.load_module(path)
    return loadfile(core.get_modpath("gigatools") .. "/" .. path)(_gigatools)
 end
-
-
 
 _gigatools.load_module("api.lua")
 _gigatools.load_module("dig.lua")

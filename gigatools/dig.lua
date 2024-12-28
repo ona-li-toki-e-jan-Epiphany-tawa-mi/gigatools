@@ -20,8 +20,6 @@
 -- Imports private namespace.
 local _gigatools = ...
 
-
-
 local half_pi    = math.pi / 2
 local quarter_pi = math.pi / 4
 
@@ -144,8 +142,6 @@ local function is_meant_to_break(toolitem, node)
    return false
 end
 
-
-
 --- Used to check if a player has used a multinode tool to dig a node, meaning
 --- that the resulting calls from register_on_dignode() are the result of the
 --- tool's multinode digging. This is to prevent recursively mining nodes.
@@ -197,8 +193,6 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
    is_using_multinode_tool[player_name] = nil
 end
 core.register_on_dignode(try_dig_with_multinode_tool)
-
-
 
 --- Adjusts the dig speed of multinode tools to account for how many blocks are
 --- to be broken.

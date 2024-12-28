@@ -23,8 +23,6 @@
 
 local S = core.get_translator("gigatools_hammers")
 
-
-
 --- Returns whether the mod with the given name is enabled.
 --- @param name string
 --- @return boolean
@@ -32,9 +30,10 @@ local function is_mod_enabled(name)
    return nil ~= core.get_modpath(name)
 end
 
+--------------------------------------------------------------------------------
+-- default support (i.e. Minetest Game.)                                      --
+--------------------------------------------------------------------------------
 
-
--- Minetest Game support.
 if is_mod_enabled("default") then
    -- TODO: see if values can be pulled from original tools.
    --- @param name string
@@ -135,9 +134,10 @@ if is_mod_enabled("default") then
    })
 end
 
+--------------------------------------------------------------------------------
+-- mcl_tools support (i.e. Mineclonia.)                                       --
+--------------------------------------------------------------------------------
 
-
--- Mineclonia, Voxelibre, etc. support.
 if is_mod_enabled("mcl_tools") then
    --- @param name string
    --- @param crafting_material string|nil The material to craft the hammer, or

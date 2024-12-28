@@ -17,9 +17,9 @@
 
 -- Gigatools API module.
 
--- Imports private namespace.
-
-
+--------------------------------------------------------------------------------
+-- Local utilities                                                            --
+--------------------------------------------------------------------------------
 
 --- Asserts the validity of a dimension size.
 --- @param size integer The size value.
@@ -52,7 +52,9 @@ local width_meta_key  = "gigatools_width"
 local height_meta_key = "gigatools_height"
 local depth_meta_key  = "gigatools_depth"
 
-
+--------------------------------------------------------------------------------
+-- Public API                                                                 --
+--------------------------------------------------------------------------------
 
 -- README:
 --

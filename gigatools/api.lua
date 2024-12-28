@@ -21,11 +21,11 @@
 
 
 
---- Asserts the validity of a dimension size for
---- @{gigatools.registered_multinode_tools}.
--- @param size The size value.
--- @param can_be_even Whether the dimension can be even.
--- @param name The name of the size (i.e. "width") to show in error logs.
+--- Asserts the validity of a dimension size.
+--- @param size integer The size value.
+--- @param can_be_even boolean Whether the dimension can be even.
+--- @param name string The name of the size (i.e. "width") to show in error
+--- logs.
 local function assert_valid_dimension_size(size, can_be_even, name)
    assert(
       "number" == type(size),
@@ -70,15 +70,18 @@ local depth_meta_key  = "gigatools_depth"
 -- })
 --
 -- You can also set an individual itemstack to have custom multinode dimensions,
--- see @{gigatools.make_multinode}.
+-- see gigatools.make_multinode().
+
+--- @alias MultinodeDefinition { width: integer, height: integer, depth: integer }
 
 -- Global namespace.
 gigatools = {}
 
 --- Creates a table that you can assign to _gigatools in an item definition.
--- @param width The width of the cuboid to dig. Must be an odd integer >= 1.
--- @param height The height of the cuboid to dig. Must be an odd integer >= 1.
--- @param depth The depth of the cuboid to dig. Must be an integer != 0.
+--- @param width integer The width of the cuboid to dig. Must be odd and >= 1.
+--- @param height integer The height of the cuboid to dig. Must be odd and >= 1.
+--- @param depth integer The depth of the cuboid to dig. Must be >= 0.
+--- @return MultinodeDefinition
 function gigatools.multinode_definition(width, height, depth)
    assert_valid_dimension_size(width,  false, "width")
    assert_valid_dimension_size(height, false, "height")
@@ -93,9 +96,9 @@ end
 
 --- Sets an individual item to have custom multinode dimensions. Overrides the
 --- dimensions in the item's definition.
--- @param width The width of the cuboid to dig. Must be an odd integer >= 1.
--- @param height The height of the cuboid to dig. Must be an odd integer >= 1.
--- @param depth The depth of the cuboid to dig. Must be an integer != 0.
+--- @param width integer The width of the cuboid to dig. Must be odd and >= 1.
+--- @param height integer The height of the cuboid to dig. Must be odd and >= 1.
+--- @param depth integer The depth of the cuboid to dig. Must be >= 0.
 function gigatools.make_multinode(item, width, height, depth)
    assert_valid_dimension_size(width,  false, "width")
    assert_valid_dimension_size(height, false, "height")
@@ -108,7 +111,8 @@ function gigatools.make_multinode(item, width, height, depth)
 end
 
 --- Returns the multinode node dig dimensions of the given item.
--- @return The dimensions, or nil, if they are not present.
+--- @return MultinodeDefinition|nil The dimensions, or nil, if they are not
+--- present.
 function gigatools.get_dimensions(item)
    local meta   = item:get_meta()
    local width  = meta:get_int(width_meta_key)

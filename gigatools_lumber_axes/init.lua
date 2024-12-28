@@ -25,7 +25,9 @@ local S = core.get_translator("gigatools_lumber_axes")
 
 
 
--- Returns whether the mod with the given name is enabled.
+--- Returns whether the mod with the given name is enabled.
+--- @param name string
+--- @return boolean
 local function is_mod_enabled(name)
    return nil ~= core.get_modpath(name)
 end
@@ -34,6 +36,9 @@ end
 
 if is_mod_enabled("default") then
    -- TODO: see if values can be pulled from original tools.
+   --- @param name string
+   --- @param crafting_material string
+   --- @param definition ItemDefinition
    local function register_lumber_axe(name, crafting_material, definition)
       definition.sound      = { breaks = "default_tool_breaks" }
       definition.groups     = { axe    = 1 }
@@ -122,14 +127,14 @@ end
 
 -- Mineclonia, Voxelibre, etc. support.
 if is_mod_enabled("mcl_tools") then
-   -- @param name string.
-   -- @param crafting_material string|nil The material to craft the lumber axe,
-   -- or nil, for no recipe.
-   -- @param derivative_tool table The tool definition of the axe that the
-   -- lumber axe derives from.
-   -- @param material_set table The material set that the lumber axe derives
-   -- from.
-   -- @param definition table.
+   --- @param name string
+   --- @param crafting_material string|nil The material to craft the lumber axe,
+   --- or nil, for no recipe.
+   --- @param derivative_tool ItemDefinition The tool definition of the axe that
+   --- the lumber axe derives from.
+   --- @param material_set table The material set that the lumber axe derives
+   --- from.
+   --- @param definition ItemDefinition
    local function register_lumber_axe( name
                                      , crafting_material
                                      , derivative_tool

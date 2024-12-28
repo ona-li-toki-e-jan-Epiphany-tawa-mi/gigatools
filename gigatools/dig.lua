@@ -26,6 +26,8 @@ local half_pi    = math.pi / 2
 local quarter_pi = math.pi / 4
 
 --- Returns whether the player is facing the +/- X axis "enough."
+--- @param player Player
+--- @return boolean
 local function is_player_facing_x_axis(player)
    local yaw_rad = player:get_look_horizontal()
    return (yaw_rad > 3*half_pi - quarter_pi and yaw_rad < 2*math.pi - quarter_pi)
@@ -33,12 +35,13 @@ local function is_player_facing_x_axis(player)
 end
 
 --- Returns a set of axes representing the cuboid digging area the player has.
--- See @{apply_cuboid} for what this is used for.
--- @param pointed_thing The digging location as a pointed_thing of type node.
--- @return The field name for the width axis.
--- @return The field name for the height axis.
--- @return The field name for the depth axis.
--- @return The sign (+/-) of the depth axis.
+--- apply_cuboid() for what this is used for.
+--- @param pointed_thing NodePointedThing The digging location as a
+--- pointed_thing of type node.
+--- @return string The field name for the width axis.
+--- @return string The field name for the height axis.
+--- @return string The field name for the depth axis.
+--- @return integer The sign (+/-) of the depth axis.
 local function get_digging_cuboid_axes(player, pointed_thing)
    local above = pointed_thing.above
    local under = pointed_thing.under
@@ -67,26 +70,30 @@ local function get_digging_cuboid_axes(player, pointed_thing)
 end
 
 --- Calls a function on a directional cuboid of nodes.
--- @param position The cuboid's center for width/height and the starting
--- position for the depth.
--- @param width_field The field name that represents the width axis (i.e. "x".)
--- @param width_size The size of the cuboid along the width axis. Should be an
--- odd integer >= 1.
--- @param height_field The field name that represents the height axis (i.e.
--- "y".)
--- @param height_size The size of the cuboid along the height axis. Should be an
--- odd integer >= 1.
--- @param depth_field The field name that represents the depth axis (i.e. "z".")
--- @param depth_distance The size of cuboid along the depth axis. Sign (+/-)
--- specifies direction on the axis. Should be an integer ~= 0.
--- @param func The function to call on each node in the cuboid.
--- Parameters:
---   1. position The position of the node.
---   2. node The node.
---   3. width_offset The node's offset from the center along the width axis.
---   4. height_offset The node's offset from the center along the height axis.
---   5. depth_offset The node's offset from the starting position along the
---   depth axis.
+--- @param position Vector The cuboid's center for width/height and the starting
+--- position for the depth.
+--- @param width_field string The field name that represents the width axis
+--- (i.e. "x".)
+--- @param width_size integer The size of the cuboid along the width axis.
+--- Should be odd and  >= 1.
+--- @param height_field string The field name that represents the height axis
+--- (i.e. "y".)
+--- @param height_size integer The size of the cuboid along the height axis.
+--- Should be odd and >= 1.
+--- @param depth_field string The field name that represents the depth axis
+--- (i.e. "z".")
+--- @param depth_distance integer The size of cuboid along the depth axis. Sign
+--- (+/-) specifies direction on the axis. Should be ~= 0.
+--- @param func fun( position: Vector, node: Node, width_offset: integer,
+---                  height_offset: integer, depth_offset: integer)
+--- The function to call on each node in the cuboid.
+--- Parameters:
+---   1. position The position of the node.
+---   2. node The node.
+---   3. width_offset The node's offset from the center along the width axis.
+---   4. height_offset The node's offset from the center along the height axis.
+---   5. depth_offset The node's offset from the starting position along the
+---   depth axis.
 local function apply_cuboid( position
                            , width_field, width_size
                            , height_field, height_size
@@ -121,7 +128,8 @@ end
 
 --- Returns whether a node is meant to be broken by a tool (as-in the node is a
 --- part of at least one of the tool's groupcaps.)
--- @param toolitem ItemStack.
+--- @param toolitem ItemStack
+--- @param node Node
 local function is_meant_to_break(toolitem, node)
    local groupcaps = toolitem:get_tool_capabilities().groupcaps
 
@@ -136,19 +144,24 @@ end
 
 
 
--- Used to check if a player has used a multinode tool to dig a node, meaning
--- that the resulting calls from register_on_dignode() are the result of the
--- tool's multinode digging. This is to prevent recursively mining nodes.
+--- Used to check if a player has used a multinode tool to dig a node, meaning
+--- that the resulting calls from register_on_dignode() are the result of the
+--- tool's multinode digging. This is to prevent recursively mining nodes.
+--- @type table<string, boolean>
 local is_using_multinode_tool = {}
 
--- Map between player names and the pointed_thing from
--- try_adjust_multinode_tool_dig_time(). This is needed because
--- minetest.register_on_dignode() does not return a pointed_thing, which is
--- needed to determine the mining cuboid axes.
+--- Map between player names and the pointed_thing from
+--- try_adjust_multinode_tool_dig_time(). This is needed because
+--- core.register_on_dignode() does not return a pointed_thing, which is needed
+--- to determine the mining cuboid axes.
+--- @type table<string, NodePointedThing>
 local player_pointed_things = {}
 
 --- Handles checking for the use of a multinode tool and digging the extra
 --- nodes.
+--- @param position Vector
+--- @param old_node ItemStack
+--- @param digger ObjectRef|nil
 local function try_dig_with_multinode_tool(position, old_node, digger)
    if nil == digger or not digger:is_player() then return end
    local player_name = digger:get_player_name()
@@ -163,7 +176,8 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
 
    local pointed_thing = player_pointed_things[player_name]
    assert(nil ~= pointed_thing, "expected valid pointed_thing, got nil")
-   local width_axis, height_axis, depth_axis, depth_axis_sign = get_digging_cuboid_axes(digger, pointed_thing)
+   local width_axis, height_axis, depth_axis, depth_axis_sign =
+      get_digging_cuboid_axes(digger, pointed_thing)
    apply_cuboid(
       position,
       width_axis,  dig_dimensions.width,
@@ -188,8 +202,16 @@ core.register_on_dignode(try_dig_with_multinode_tool)
 
 --- Adjusts the dig speed of multinode tools to account for how many blocks are
 --- to be broken.
--- Yup, you can't cheat and break cobblestone by obsidian.
-local function try_adjust_multinode_tool_dig_time(position, node, puncher, pointed_thing)
+--- Yup, you can't cheat and break cobblestone by obsidian.
+--- @param position Vector
+--- @param node Node
+--- @param puncher ObjectRef|nil
+--- @param pointed_thing NodePointedThing
+local function try_adjust_multinode_tool_dig_time( position
+                                                 , node
+                                                 , puncher
+                                                 , pointed_thing
+                                                 )
    if nil == puncher or not puncher:is_player() then return end
 
    local wielded_item   = puncher:get_wielded_item()

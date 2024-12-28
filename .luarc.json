@@ -1,0 +1,12 @@
+{
+    "diagnostics": {
+        "disable": [
+            "undefined-field",
+        ],
+    },
+    "diagnostics.globals": [
+        "core",
+        "mcl_tools",
+        "mcl_vars",
+    ],
+}

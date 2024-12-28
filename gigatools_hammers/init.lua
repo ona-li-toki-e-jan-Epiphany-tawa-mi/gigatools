@@ -25,8 +25,9 @@ local S = core.get_translator("gigatools_hammers")
 
 
 
--- Returns whether the mod with the given name is enabled.
--- @param name string.
+--- Returns whether the mod with the given name is enabled.
+--- @param name string
+--- @return boolean
 local function is_mod_enabled(name)
    return nil ~= core.get_modpath(name)
 end
@@ -36,6 +37,9 @@ end
 -- Minetest Game support.
 if is_mod_enabled("default") then
    -- TODO: see if values can be pulled from original tools.
+   --- @param name string
+   --- @param crafting_material string
+   --- @param definition ItemDefinition
    local function register_hammer(name, crafting_material, definition)
       definition.sound        = definition.sound or {}
       definition.sound.breaks = "default_tool_breaks"
@@ -135,13 +139,13 @@ end
 
 -- Mineclonia, Voxelibre, etc. support.
 if is_mod_enabled("mcl_tools") then
-   -- @param name string.
-   -- @param crafting_material string|nil The material to craft the hammer, or
-   -- nil, for no recipe.
-   -- @param derivative_tool table The tool definition of the pickaxe that the
-   -- hammer derives from.
-   -- @param material_set table The material set that the hammer derives from.
-   -- @param definition table.
+   --- @param name string
+   --- @param crafting_material string|nil The material to craft the hammer, or
+   --- nil, for no recipe.
+   --- @param derivative_tool ItemDefinition The tool definition of the pickaxe
+   --- that the hammer derives from.
+   --- @param material_set table The material set that the hammer derives from.
+   --- @param definition ItemDefinition
    local function register_hammer( name
                                  , crafting_material
                                  , derivative_tool

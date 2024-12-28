@@ -20,26 +20,31 @@
 
 
 
+--- @alias LogLevel "none" | "error" | "warning" | "action" | "info" | "verbose"
+
 -- Private namespace for internal functions.
 local _gigatools = {}
 
 --- Wrapper for core.log().
--- Adds a prefix to the text inidicating that the log message comes from
--- Gigatools.
--- @param level One of "none", "error", "warning", "action", "info", or "verbose".
--- @param text The log message.
+--- Adds a prefix to the text inidicating that the log message comes from
+--- Gigatools.
+--- @param level LogLevel
+--- @param text string The log message.
 function _gigatools.log(level, text)
    core.log(level, "[gigatools] " .. text)
 end
 
 --- Resolves item name aliases.
+--- @param name string
+--- @return string
 function _gigatools.resolve_alias(name)
    return core.registered_aliases[name] or name
 end
 
 --- Loads and executes a Gigatools Lua module.
--- @param path The file path of the module relative to the Gigatools directory.
--- @return The return value of the Lua module.
+--- @param path string The file path of the module relative to the Gigatools
+--- directory.
+--- @return any The return value of the Lua module.
 function _gigatools.load_module(path)
    return loadfile(core.get_modpath("gigatools") .. "/" .. path)(_gigatools)
 end

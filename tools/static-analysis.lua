@@ -23,8 +23,6 @@
 
 local json = dofile("tools/json.lua")
 
-
-
 --- Runs the given shell command. Crashes if it fails.
 --- @param command string
 local function run(command)
@@ -50,8 +48,6 @@ local function read_file(file_path)
    file:close()
    return contents
 end
-
-
 
 local lls_path = ".lls"
 run("lua-language-server --check . --logpath " .. lls_path)

@@ -208,7 +208,7 @@ if is_mod_enabled("mcl_tools") then
                       , mcl_tools.sets["gold"]
                       , {
       description     = S("Golden Lumber Axe"),
-      inventory_image = "gigatools_lumber_axes_mese_lumber_axe.png",
+      inventory_image = "gigatools_lumber_axes_gold_lumber_axe.png",
    })
    register_lumber_axe( "gigatools_lumber_axes:lumber_axe_diamond"
                       , "mcl_core:diamondblock"

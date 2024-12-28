@@ -218,7 +218,7 @@ if is_mod_enabled("mcl_tools") then
                   , mcl_tools.sets["gold"]
                   , {
       description     = S("Golden Hammer"),
-      inventory_image = "gigatools_hammers_mese_hammer.png",
+      inventory_image = "gigatools_hammers_gold_hammer.png",
    })
    register_hammer( "gigatools_hammers:hammer_diamond"
                   , "mcl_core:diamondblock"

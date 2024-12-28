@@ -206,7 +206,7 @@ if is_mod_enabled("mcl_tools") then
                      , mcl_tools.sets["gold"]
                      , {
       description     = S("Golden Excavator"),
-      inventory_image = "gigatools_excavators_mese_excavator.png",
+      inventory_image = "gigatools_excavators_gold_excavator.png",
    })
    register_excavator( "gigatools_excavators:excavator_diamond"
                      , "mcl_core:diamondblock"

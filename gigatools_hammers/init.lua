@@ -21,6 +21,8 @@
 -- NOTE: when adding new hammers, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.
 
+-- TODO: abstract magic values into variables.
+
 local S = core.get_translator("gigatools_hammers")
 
 --- Returns whether the mod with the given name is enabled.
@@ -35,16 +37,44 @@ end
 --------------------------------------------------------------------------------
 
 if is_mod_enabled("default") then
-   -- TODO: see if values can be pulled from original tools.
    --- @param name string
    --- @param crafting_material string
+   --- @param derivative_tool ItemDefinition The tool definition of the pickaxe
+   --- that the hammer derives from.
    --- @param definition ItemDefinition
-   local function register_hammer(name, crafting_material, definition)
-      definition.sound        = definition.sound or {}
-      definition.sound.breaks = "default_tool_breaks"
+   local function register_hammer( name
+                                 , crafting_material
+                                 , derivative_tool
+                                 , definition
+                                 )
+      definition.sound = { breaks = "default_tool_breaks" }
 
-      definition.groups         = definition.groups or {}
-      definition.groups.pickaxe = 1
+      definition.groups = { pickaxe = 1}
+
+      definition.tool_capabilities = {
+         full_punch_interval = 1.7 *
+            derivative_tool.tool_capabilities.full_punch_interval,
+         max_drop_level = derivative_tool.tool_capabilities.max_drop_level,
+         damage_groups = {
+            fleshy = 1 + derivative_tool.tool_capabilities.damage_groups.fleshy,
+         },
+         groupcaps = {
+            cracky = {
+               uses = 9 *
+                  derivative_tool.tool_capabilities.groupcaps.cracky.uses,
+               maxlevel =
+                  derivative_tool.tool_capabilities.groupcaps.cracky.maxlevel,
+               times = {
+                  [1] = 1.7 *
+                     derivative_tool.tool_capabilities.groupcaps.cracky.times[1],
+                  [2] = 1.7 *
+                     derivative_tool.tool_capabilities.groupcaps.cracky.times[2],
+                  [3] = 1.7 *
+                     derivative_tool.tool_capabilities.groupcaps.cracky.times[3],
+               },
+            },
+         },
+      }
 
       definition._gigatools = gigatools.multinode_definition(3, 3, 1)
 
@@ -60,77 +90,33 @@ if is_mod_enabled("default") then
       })
    end
 
-   register_hammer("gigatools_hammers:hammer_bronze", "default:bronzeblock", {
+   register_hammer( "gigatools_hammers:hammer_bronze"
+                  , "default:bronzeblock"
+                  , core.registered_tools["default:pick_bronze"]
+                  , {
        description     = S("Bronze Hammer"),
        inventory_image = "gigatools_hammers_bronze_hammer.png",
-
-       tool_capabilities = {
-          full_punch_interval = 1.7,
-          max_drop_level      = 1,
-          damage_groups       = { fleshy = 5 },
-
-          groupcaps = {
-             cracky = {
-                times = { [1] = 7.65, [2] = 3.06, [3] = 1.53 },
-                uses = 180,
-                maxlevel = 2
-             },
-          }
-       }
    })
-   register_hammer("gigatools_hammers:hammer_steel", "default:steelblock", {
+   register_hammer( "gigatools_hammers:hammer_steel"
+                  , "default:steelblock"
+                  , core.registered_tools["default:pick_steel"]
+                  , {
      description     = S("Steel Hammer"),
      inventory_image = "gigatools_hammers_steel_hammer.png",
-
-     tool_capabilities = {
-        full_punch_interval = 1.7,
-        max_drop_level      = 1,
-        damage_groups       = { fleshy = 5 },
-
-        groupcaps = {
-           cracky = {
-              times = { [1] = 6.8, [2] = 2.72, [3] = 1.36 },
-              uses = 180,
-              maxlevel = 2
-           }
-        }
-     }
    })
-   register_hammer("gigatools_hammers:hammer_mese", "default:mese", {
+   register_hammer( "gigatools_hammers:hammer_mese"
+                  , "default:mese"
+                  , core.registered_tools["default:pick_mese"]
+                  , {
        description     = S("Mese Hammer"),
        inventory_image = "gigatools_hammers_mese_hammer.png",
-
-       tool_capabilities = {
-          full_punch_interval = 1.53,
-          max_drop_level      = 3,
-          damage_groups       = { fleshy = 6 },
-
-          groupcaps={
-             cracky = {
-                times = { [1] = 4.08, [2] = 2.04, [3] = 1.02 },
-                uses = 180,
-                maxlevel = 3
-             },
-          }
-       }
    })
-   register_hammer("gigatools_hammers:hammer_diamond", "default:diamondblock", {
+   register_hammer( "gigatools_hammers:hammer_diamond"
+                  , "default:diamondblock"
+                  , core.registered_tools["default:pick_diamond"]
+                  , {
        description     = S("Diamond Hammer"),
        inventory_image = "gigatools_hammers_diamond_hammer.png",
-
-       tool_capabilities = {
-          full_punch_interval = 1.53,
-          max_drop_level      = 3,
-          damage_groups       = { fleshy = 6 },
-
-          groupcaps = {
-             cracky = {
-                times = { [1] = 3.4, [2] = 1.7, [3] = 0.85 },
-                uses = 270,
-                maxlevel = 3
-             },
-          }
-       }
    })
 end
 

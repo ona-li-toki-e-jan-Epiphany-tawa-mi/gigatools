@@ -33,8 +33,13 @@
 --- @alias Rating integer
 --- @alias Groups table<string, Rating>
 
---- @alias GroupCaps {}
---- @alias ToolCapabilities { groupcaps: GroupCaps? }
+--- @alias Group {
+---     uses: integer,
+---     maxlevel: integer,
+---     times: number[],
+--- }
+--- @alias GroupCaps table<string, Group>
+--- @alias ToolCapabilities { groupcaps: GroupCaps }
 --- @alias ItemDefinition {
 ---     inventory_image: string?,
 ---     wield_image: string?,
@@ -81,7 +86,7 @@
 ---     registered_tools: table<string, ItemDefinition>,
 ---     registered_nodes: table<string, NodeDefinition>,
 ---     log: fun(level: LogLevel|nil, text: string),
----     get_item_group: (fun(name: string, group: Groups): integer),
+---     get_item_group: (fun(name: string, group: string): integer),
 ---     get_node: (fun(pos: Vector): Node),
 ---     get_modpath: (fun(modname: string): string|nil),
 ---     get_translator: (fun(modname: string): fun(text: string): string),

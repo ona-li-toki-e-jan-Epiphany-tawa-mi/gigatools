@@ -131,7 +131,6 @@ end
 --- @return boolean
 local function is_meant_to_break(toolitem, node)
    local groupcaps = toolitem:get_tool_capabilities().groupcaps
-   --- @cast groupcaps GroupCaps
 
    for group, _ in pairs(groupcaps) do
       if 0 ~= core.get_item_group(node.name, group) then

@@ -21,6 +21,8 @@
 -- NOTE: when adding new excavators, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.
 
+-- TODO: abstract magic values into variables.
+
 local S = core.get_translator("gigatools_excavators")
 
 --- Returns whether the mod with the given name is enabled.
@@ -35,15 +37,48 @@ end
 --------------------------------------------------------------------------------
 
 if is_mod_enabled("default") then
-   -- TODO: see if values can be pulled from original tools.
    --- @param name string
    --- @param crafting_material string
+   --- @param derivative_tool ItemDefinition The tool definition of the shovel
+   --- that the excavator derives from.
    --- @param definition ItemDefinition
-   local function register_excavator(name, crafting_material, definition)
+   local function register_excavator( name
+                                    , crafting_material
+                                    , derivative_tool
+                                    , definition
+                                    )
       definition.wield_image = definition.inventory_image .. "^[transformR90"
-      definition.sound       = { breaks  = "default_tool_breaks" }
-      definition.groups      = { shovel = 1 }
+      definition.sound       = { breaks = "default_tool_breaks" }
+
+      definition.groups = { shovel = 1 }
+
+      definition.tool_capabilities = {
+         full_punch_interval = 1.7 *
+            derivative_tool.tool_capabilities.full_punch_interval,
+         max_drop_level = derivative_tool.tool_capabilities.max_drop_level,
+         damage_groups = {
+            fleshy = 1 + derivative_tool.tool_capabilities.damage_groups.fleshy,
+         },
+         groupcaps = {
+            crumbly = {
+               uses = 9 *
+                  derivative_tool.tool_capabilities.groupcaps.crumbly.uses,
+               maxlevel =
+                  derivative_tool.tool_capabilities.groupcaps.crumbly.maxlevel,
+               times = {
+                  [1] = 1.7 *
+                     derivative_tool.tool_capabilities.groupcaps.crumbly.times[1],
+                  [2] = 1.7 *
+                     derivative_tool.tool_capabilities.groupcaps.crumbly.times[2],
+                  [3] = 1.7 *
+                     derivative_tool.tool_capabilities.groupcaps.crumbly.times[3],
+               },
+            },
+         },
+      }
+
       definition._gigatools  = gigatools.multinode_definition(3, 3, 1)
+
       core.register_tool(name, definition)
 
       core.register_craft({
@@ -58,66 +93,31 @@ if is_mod_enabled("default") then
 
    register_excavator( "gigatools_excavators:excavator_bronze"
                      , "default:bronzeblock"
+                     , core.registered_tools["default:shovel_bronze"]
                      , {
        description     = S("Bronze Excavator"),
        inventory_image = "gigatools_excavators_bronze_excavator.png",
-
-       tool_capabilities = {
-           full_punch_interval = 1.87,
-           max_drop_level      = 1,
-           damage_groups       = { fleshy = 4 },
-
-           groupcaps = {
-              crumbly = { times = { [1] = 2.805, [2] = 1.785, [3] = 0.765 }, uses = 225, maxlevel = 2 },
-           }
-       }
    })
    register_excavator( "gigatools_excavators:excavator_steel"
                      , "default:steelblock"
+                     , core.registered_tools["default:shovel_steel"]
                      , {
      description     = S("Steel Excavator"),
      inventory_image = "gigatools_excavators_steel_excavator.png",
-
-     tool_capabilities = {
-        full_punch_interval = 1.87,
-        max_drop_level      = 1,
-        damage_groups       = { fleshy = 4 },
-
-        groupcaps = {
-           crumbly = { times = { [1] = 2.55, [2] = 1.53, [3] = 0.68 }, uses = 270, maxlevel = 2 }
-        }
-     }
    })
    register_excavator( "gigatools_excavators:excavator_mese"
                      , "default:mese"
+                     , core.registered_tools["default:shovel_mese"]
                      , {
        description     = S("Mese Excavator"),
        inventory_image = "gigatools_excavators_mese_excavator.png",
-       tool_capabilities = {
-           full_punch_interval = 1.7,
-           max_drop_level      = 3,
-           damage_groups       = { fleshy = 5 },
-
-           groupcaps={
-               crumbly = { times = { [1] = 2.04, [2] = 1.02, [3] = 0.51 }, uses = 225, maxlevel = 3 },
-           }
-       }
    })
    register_excavator( "gigatools_excavators:excavator_diamond"
                      , "default:diamondblock"
+                     , core.registered_tools["default:shovel_diamond"]
                      , {
        description     = S("Diamond Excavator"),
        inventory_image = "gigatools_excavators_diamond_excavator.png",
-
-       tool_capabilities = {
-           full_punch_interval = 1.7,
-           max_drop_level      = 3,
-           damage_groups       = { fleshy = 5 },
-
-           groupcaps = {
-               crumbly = { times = { [1] = 1.87, [2] = 0.85, [3] = 0.51 }, uses = 270, maxlevel = 3 },
-           }
-       }
    })
 end
 

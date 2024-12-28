@@ -21,6 +21,8 @@
 -- NOTE: when adding new lumberaxes, multiply base item punch/dig speeds by 1.7,
 -- uses by 9, and add 1 to damage groups.
 
+-- TODO: abstract magic values into variables.
+
 local S = core.get_translator("gigatools_lumber_axes")
 
 --- Returns whether the mod with the given name is enabled.
@@ -35,14 +37,47 @@ end
 --------------------------------------------------------------------------------
 
 if is_mod_enabled("default") then
-   -- TODO: see if values can be pulled from original tools.
    --- @param name string
    --- @param crafting_material string
+   --- @param derivative_tool ItemDefinition The tool definition of the axe that
+   --- the lumber axe derives from.
    --- @param definition ItemDefinition
-   local function register_lumber_axe(name, crafting_material, definition)
-      definition.sound      = { breaks = "default_tool_breaks" }
-      definition.groups     = { axe    = 1 }
+   local function register_lumber_axe( name
+                                     , crafting_material
+                                     , derivative_tool
+                                     , definition
+                                     )
+      definition.sound = { breaks = "default_tool_breaks" }
+
+      definition.groups = { axe = 1 }
+
+      definition.tool_capabilities = {
+         full_punch_interval = 1.7 *
+            derivative_tool.tool_capabilities.full_punch_interval,
+         max_drop_level = derivative_tool.tool_capabilities.max_drop_level,
+         damage_groups = {
+            fleshy = 1 + derivative_tool.tool_capabilities.damage_groups.fleshy,
+         },
+         groupcaps = {
+            choppy = {
+               uses = 9 *
+                  derivative_tool.tool_capabilities.groupcaps.choppy.uses,
+               maxlevel =
+                  derivative_tool.tool_capabilities.groupcaps.choppy.maxlevel,
+               times = {
+                  [1] = 1.7 *
+                     derivative_tool.tool_capabilities.groupcaps.choppy.times[1],
+                  [2] = 1.7 *
+                     derivative_tool.tool_capabilities.groupcaps.choppy.times[2],
+                  [3] = 1.7 *
+                     derivative_tool.tool_capabilities.groupcaps.choppy.times[3],
+               },
+            },
+         },
+      }
+
       definition._gigatools = gigatools.multinode_definition(3, 3, 3)
+
       core.register_tool(name, definition)
 
       core.register_craft({
@@ -57,69 +92,31 @@ if is_mod_enabled("default") then
 
    register_lumber_axe( "gigatools_lumber_axes:lumber_axe_bronze"
                       , "default:bronzeblock"
+                      , core.registered_tools["default:axe_bronze"]
                       , {
        description     = S("Bronze Lumber Axe"),
        inventory_image = "gigatools_lumber_axes_bronze_lumber_axe.png",
-
-       tool_capabilities = {
-           full_punch_interval = 1.7,
-           max_drop_level      = 1,
-           damage_groups       = { fleshy = 5 },
-
-           groupcaps = {
-              choppy = { times = { [1] = 4.65, [2] = 2.89, [3] = 1.955 }, uses = 180, maxlevel = 2 },
-           }
-       }
    })
    register_lumber_axe( "gigatools_lumber_axes:lumber_axe_steel"
                       , "default:steelblock"
+                      , core.registered_tools["default:axe_steel"]
                       , {
      description     = S("Steel Lumber Axe"),
      inventory_image = "gigatools_lumber_axes_steel_lumber_axe.png",
-
-     tool_capabilities = {
-        full_punch_interval = 1.7,
-        max_drop_level      = 1,
-        damage_groups       = { fleshy = 5 },
-
-        groupcaps = {
-           choppy = { times = { [1] = 4.25, [2] = 2.38, [3] = 1.7 }, uses = 180, maxlevel = 2 }
-        }
-     }
    })
-
    register_lumber_axe( "gigatools_lumber_axes:lumber_axe_mese"
                       , "default:mese"
+                      , core.registered_tools["default:axe_mese"]
                       , {
        description     = S("Mese Lumber Axe"),
        inventory_image = "gigatools_lumber_axes_mese_lumber_axe.png",
-
-       tool_capabilities = {
-           full_punch_interval = 1.53,
-           max_drop_level      = 3,
-           damage_groups       = { fleshy = 7 },
-
-           groupcaps={
-               choppy = { times = { [1] = 3.74, [2] = 1.7, [3] = 1.02 }, uses = 180, maxlevel = 3 },
-           }
-       }
    })
-
    register_lumber_axe( "gigatools_lumber_axes:lumber_axe_diamond"
                       , "default:diamondblock"
+                      , core.registered_tools["default:axe_diamond"]
                       , {
        description     = S("Diamond Lumber Axe"),
        inventory_image = "gigatools_lumber_axes_diamond_lumber_axe.png",
-
-       tool_capabilities = {
-           full_punch_interval = 1.53,
-           max_drop_level      = 3,
-           damage_groups       = { fleshy = 6 },
-
-           groupcaps = {
-               choppy = { times = { [1] = 3.57, [2] = 1.53, [3] = 0.85 }, uses = 270, maxlevel = 3 },
-           }
-       }
    })
 end
 

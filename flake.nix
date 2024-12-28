@@ -30,6 +30,7 @@
       devShells = forAllSystems ({ pkgs }: {
         default = with pkgs; mkShell {
           nativeBuildInputs = [
+            lua lua-language-server
           ];
         };
       });

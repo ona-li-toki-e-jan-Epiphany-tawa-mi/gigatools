@@ -1,1 +1,5 @@
+# lua-language-server
+.lls
+
+# Nix.
 flake.lock

@@ -98,6 +98,7 @@ end
 
 --- Sets an individual item to have custom multinode dimensions. Overrides the
 --- dimensions in the item's definition.
+--- @param item ItemStack
 --- @param width integer The width of the cuboid to dig. Must be odd and >= 1.
 --- @param height integer The height of the cuboid to dig. Must be odd and >= 1.
 --- @param depth integer The depth of the cuboid to dig. Must be >= 0.

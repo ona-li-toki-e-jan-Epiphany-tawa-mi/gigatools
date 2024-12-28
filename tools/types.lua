@@ -45,6 +45,7 @@
 ---     [any]: any,
 --- }
 --- @alias ItemStackMetaRef {
+---     set_int: fun(self: ItemStackMetaRef, key: string, value: integer),
 ---     set_tool_capabilities: (fun(self: ItemStackMetaRef, capabilities: ToolCapabilities|nil)),
 --- }
 --- @alias ItemStack {

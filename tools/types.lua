@@ -56,7 +56,9 @@
 --- @alias Node { name: string }
 
 --- @alias Vector { x: integer, y: integer, z: integer }
---- @alias NodePointedThing { above: Vector, under: Vector }
+
+--- @alias NodePointedThing { type: "node", above: Vector, under: Vector }
+--- @alias PointedThing { type: "nothing" } | NodePointedThing
 
 --- @alias CraftRecipeShaped {
 ---     type?: "shaped",

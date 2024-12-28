@@ -133,6 +133,7 @@ end
 --- @return boolean
 local function is_meant_to_break(toolitem, node)
    local groupcaps = toolitem:get_tool_capabilities().groupcaps
+   --- @cast groupcaps GroupCaps
 
    for group, _ in pairs(groupcaps) do
       if 0 ~= core.get_item_group(node.name, group) then
@@ -184,7 +185,6 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
       width_axis,  dig_dimensions.width,
       height_axis, dig_dimensions.height,
       depth_axis,  dig_dimensions.depth * depth_axis_sign,
-      -- luacheck: push ignore 432 -- Variable shadowing.
       function(position, node, width_offset, height_offset, depth_offset)
          if (0 ~= width_offset or 0 ~= height_offset or 0 ~= depth_offset)
             and is_meant_to_break(wielded_item, node)
@@ -192,7 +192,6 @@ local function try_dig_with_multinode_tool(position, old_node, digger)
             core.node_dig(position, node, digger)
          end
       end
-      -- luacheck: pop
    )
 
    is_using_multinode_tool[player_name] = nil
@@ -236,7 +235,6 @@ local function try_adjust_multinode_tool_dig_time( position
       width_axis,  dig_dimensions.width,
       height_axis, dig_dimensions.height,
       depth_axis,  dig_dimensions.depth * depth_axis_sign,
-      -- luacheck: push ignore 432 -- Variable shadowing.
       function(_, node, _, _)
          if is_meant_to_break(wielded_item, node) then
             local node_definition = core.registered_nodes[_gigatools.resolve_alias(node.name)]
@@ -247,7 +245,6 @@ local function try_adjust_multinode_tool_dig_time( position
             block_count = 1 + block_count
          end
       end
-      -- luacheck: pop
    )
 
    -- Adjusts tool dig speed.

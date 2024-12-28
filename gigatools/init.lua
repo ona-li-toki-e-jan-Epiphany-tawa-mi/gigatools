@@ -20,8 +20,6 @@
 
 
 
---- @alias LogLevel "none" | "error" | "warning" | "action" | "info" | "verbose"
-
 -- Private namespace for internal functions.
 local _gigatools = {}
 

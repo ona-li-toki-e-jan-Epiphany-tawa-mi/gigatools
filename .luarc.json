@@ -1,7 +1,2 @@
 {
-    "diagnostics.globals": [
-        "core",
-        "mcl_tools",
-        "mcl_vars",
-    ],
 }

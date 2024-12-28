@@ -30,9 +30,6 @@
       devShells = forAllSystems ({ pkgs }: {
         default = with pkgs; mkShell {
           nativeBuildInputs = [
-            minetest
-
-            luaPackages.luacheck
           ];
         };
       });

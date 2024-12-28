@@ -18,7 +18,6 @@
 -- Gigatools API module.
 
 -- Imports private namespace.
---local _gigatools = ...
 
 
 

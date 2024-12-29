@@ -1,3 +1,5 @@
+![screenshot](screenshot.png)
+
 # Gigatools
 
 A mod pack for Luanti [https://www.luanti.org](https://www.luanti.org/) that

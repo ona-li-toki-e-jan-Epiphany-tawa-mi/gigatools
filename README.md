@@ -114,5 +114,5 @@ enviroment.
 Then, run the following command(s):
 
 ```sh
-./tools/static-analysis.lua
+.tools/static-analysis.lua
 ```

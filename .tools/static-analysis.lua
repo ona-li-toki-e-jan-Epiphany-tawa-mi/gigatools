@@ -19,9 +19,9 @@
 
 -- gigatools static analysis testing script.
 --
--- Run './tools/test.lua' in the project directory to run tests.
+-- Run '.tools/test.lua' in the project directory to run tests.
 
-local json = dofile("tools/json.lua")
+local json = dofile(".tools/json.lua")
 
 --- Runs the given shell command. Crashes if it fails.
 --- @param command string

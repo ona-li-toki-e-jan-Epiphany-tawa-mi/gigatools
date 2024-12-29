@@ -1,7 +1,6 @@
 # Prevents certain files from being put into the ContentDB releases.
 
 .* export-ignore
-tools/ export-ignore
 
 # Nix.
 flake.nix  export-ignore

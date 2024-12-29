@@ -18,12 +18,14 @@
 -- Gigatools excavators submod.
 -- Like shovels, but dig in a 3x3.
 
--- NOTE: when adding new excavators, multiply base item punch/dig speeds by 1.7,
--- uses by 9, and add 1 to damage groups.
-
--- TODO: abstract magic values into variables.
-
 local S = core.get_translator("gigatools_excavators")
+
+-- Multiplier to apply to the dig times of an excavator.
+local times_factor = 1.7
+-- Boost to add to the damage of an excavator.
+local damage_boost = 1
+-- Multiplier to apply to the uses count of an excavator.
+local uses_factor = 9
 
 --- Returns whether the mod with the given name is enabled.
 --- @param name string
@@ -53,24 +55,25 @@ if is_mod_enabled("default") then
       definition.groups = { shovel = 1 }
 
       definition.tool_capabilities = {
-         full_punch_interval = 1.7 *
+         full_punch_interval = times_factor *
             derivative_tool.tool_capabilities.full_punch_interval,
          max_drop_level = derivative_tool.tool_capabilities.max_drop_level,
          damage_groups = {
-            fleshy = 1 + derivative_tool.tool_capabilities.damage_groups.fleshy,
+            fleshy = damage_boost +
+               derivative_tool.tool_capabilities.damage_groups.fleshy,
          },
          groupcaps = {
             crumbly = {
-               uses = 9 *
+               uses = uses_factor *
                   derivative_tool.tool_capabilities.groupcaps.crumbly.uses,
                maxlevel =
                   derivative_tool.tool_capabilities.groupcaps.crumbly.maxlevel,
                times = {
-                  [1] = 1.7 *
+                  [1] = times_factor *
                      derivative_tool.tool_capabilities.groupcaps.crumbly.times[1],
-                  [2] = 1.7 *
+                  [2] = times_factor *
                      derivative_tool.tool_capabilities.groupcaps.crumbly.times[2],
-                  [3] = 1.7 *
+                  [3] = times_factor *
                      derivative_tool.tool_capabilities.groupcaps.crumbly.times[3],
                },
             },
@@ -149,10 +152,10 @@ if is_mod_enabled("mcl_tools") then
       }
 
       definition.tool_capabilities = {
-         full_punch_interval = 1.7 *
+         full_punch_interval = times_factor *
             derivative_tool.tool_capabilities.full_punch_interval,
          damage_groups = {
-            fleshy = 1 +
+            fleshy = damage_boost +
                derivative_tool.tool_capabilities.damage_groups.fleshy,
          },
          max_drop_level = material_set.max_drop_level,
@@ -160,16 +163,16 @@ if is_mod_enabled("mcl_tools") then
 
       definition._mcl_diggroups = {
          shovely = {
-            uses  = 9 * material_set.uses,
+            uses  = uses_factor * material_set.uses,
             level = material_set.level,
-            speed = material_set.speed / 1.7,
+            speed = material_set.speed / times_factor,
          },
       }
 
       definition._mcl_toollike_wield = true
       definition._repair_material    = material_set.material
       definition.wield_scale         = mcl_vars.tool_wield_scale
-      definition._doc_items_longdesc  = S(
+      definition._doc_items_longdesc = S(
          "Excavators are tools for digging coarse blocks, such as dirt, sand "
          .. "and gravel, in a 3x3 plane. Excavators can be used as weapons, "
          .. "but they are very weak."

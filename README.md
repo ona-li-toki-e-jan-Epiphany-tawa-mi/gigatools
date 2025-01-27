@@ -55,7 +55,10 @@ the following materials:
 
 ## How to install
 
-You can place this directory, or symlink it, into the mods folder in your
+You can install it from ContentDB
+[https://content.luanti.org/packages/ona-li-toki-e-jan-Epiphany-tawa-mi/gigatools](https://content.luanti.org/packages/ona-li-toki-e-jan-Epiphany-tawa-mi/gigatools/).
+
+Or, you can place this directory, or symlink it, into the mods folder in your
 Luanti directory.
 
 ## How to test

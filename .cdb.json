@@ -1,7 +1,6 @@
 {
     "type": "MOD",
     "title": "Gigatools",
-    "name": "gigatools",
     "short_description": "Gigatools for gigachads with gigaworkloads.",
     "dev_state": "BETA",
     "tags": [ "survival", "library", "tools" ],

@@ -117,9 +117,3 @@ mcl_vars = {}
 
 --- @type {}
 mcl_tools = {}
-
---- From mcl_utils
---- @param t table
---- @param ... table
---- @return table
-function table.merge(t, ...) return {} end
